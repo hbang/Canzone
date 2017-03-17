@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Explanation of how to enable the now playing widget. -->
+	<key>WIDGET_EXPLANATION</key>
+	<string>Enable the Now Playing widget via the Notification Centre Today page.</string>
+
+	<!-- Label for the notifications section. -->
+	<key>NOTIFICATIONS</key>
+	<string>Notifications</string>
+
+	<!-- Explanation message below the now playing notifications switch. -->
+	<key>NOW_PLAYING_BULLETINS_EXPLANATION</key>
+	<string>Show a notification when the now playing song changes. Swipe or 3D Touch to reveal playback controls.</string>
+
+	<!-- Switch to toggle keeping all notifications or just showing the latest. -->
+	<key>KEEP_ALL_NOTIFICATIONS</key>
+	<string>Keep All Notifications</string>
+
+	<!-- Explanation of the Keep All Notifications switch. -->
+	<key>KEEP_ALL_NOTIFICATIONS_EXPLANATION</key>
+	<string>Keep all now playing notifications in the Notification Centre, or only show the latest.</string>
+
+	<!-- Switch to wake the screen when the device is locked. -->
+	<key>WAKE_WHEN_LOCKED</key>
+	<string>Wake When Locked</string>
+
+	<!-- Explanation of the above setting. -->
+	<key>WAKE_WHEN_LOCKED_EXPLANATION</key>
+	<string>Wake the screen when showing a now playing notification while the device is locked.</string>
+
+	<!-- Switch to toggle replacing the music controls on the lock screen. -->
+	<key>HIDE_LOCK_MUSIC_CONTROLS</key>
+	<string>Replace Lock Screen Music Controls</string>
+
+	<!-- Explanation of the replace music controls switch. -->
+	<key>HIDE_LOCK_MUSIC_CONTROLS_EXPLANATION</key>
+	<string>Use the now playing notification or widget to control your music.</string>
+
+	<!-- Label for TypeStatus Plus button. Do not translate. -->
+	<key>TYPESTATUS_PLUS</key>
+	<string>TypeStatus Plus</string>
+
+	<!-- Switch to toggle the TypeStatus Plus provider. -->
+	<key>TYPESTATUS_PLUS_PROVIDER</key>
+	<string>Provider</string>
+
+	<!-- Explanation displayed when TypeStatus Plus is installed. -->
+	<key>TYPESTATUS_PLUS_PROVIDER_EXPLANATION</key>
+	<string>Use subtle TypeStatus notifications instead of banners.</string>
+
+	<!-- Explanation displayed when TypeStatus Plus isn’t installed. -->
+	<key>TYPESTATUS_PLUS_SUBTITLE</key>
+	<string>Get subtle now playing notifications in your status bar, and more, with TypeStatus Plus.</string>
+</dict>
+</plist>

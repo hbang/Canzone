@@ -1,0 +1,11 @@
+@import UIKit;
+#import <Cephei/UIView+CompactConstraint.h>
+#import <MediaPlayerUI/MPUControlCenterMediaControlsView.h>
+#import <MediaPlayerUI/MPUControlCenterMediaControlsViewController.h>
+#import <MediaPlayerUI/MPUNowPlayingArtworkView.h>
+#import <MediaPlayerUI/MPUNowPlayingController.h>
+#import <MediaPlayerUI/MPUNowPlayingMetadata.h>
+#import <MediaPlayerUI/MPUTransportControlsView.h>
+#import <MediaRemote/MediaRemote.h>
+#import <MobileCoreServices/LSApplicationProxy.h>
+#import <UIKit/UIColor+Private.h>
