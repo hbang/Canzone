@@ -20,20 +20,11 @@
 	if (self) {
 		_preferences = [[HBPreferences alloc] initWithIdentifier:@"ws.hbang.canzone"];
 
-		// if typestatus plus is installed, enable the provider and disable hiding lock music controls
-		// by default
-		if (!_preferences[@"NowPlayingProvider"]) {
-			BOOL hasTypeStatusPlus = [[NSFileManager defaultManager] fileExistsAtPath:@"/Library/MobileSubstrate/DynamicLibraries/TypeStatusPlus.dylib"];
-
-			_preferences[@"NowPlayingProvider"] = @(hasTypeStatusPlus);
-			_preferences[@"HideLockMusicControls"] = @(!hasTypeStatusPlus);
-		}
-
 		[_preferences registerBool:&_nowPlayingKeepBulletins default:NO forKey:@"NowPlayingKeepBulletins"];
 		[_preferences registerBool:&_nowPlayingWakeWhenLocked default:NO forKey:@"NowPlayingWakeWhenLocked"];
 		[_preferences registerBool:&_hideLockMusicControls default:YES forKey:@"HideLockMusicControls"];
 
-		[_preferences registerBool:&_nowPlayingProvider default:YES forKey:@"NowPlayingProvider"];
+		[_preferences registerBool:&_nowPlayingProvider default:NO forKey:@"NowPlayingProvider"];
 	}
 
 	return self;
