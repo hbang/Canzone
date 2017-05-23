@@ -60,7 +60,7 @@ static NSString *const kHBCZNowPlayingCategoryIdentifier = @"CanzoneNowPlayingCa
 
 		// give it our identifier and name
 		identity.sectionIdentifier = kHBCZAppIdentifier;
-		identity.sectionDisplayName = @"Now Playing";
+		identity.sectionDisplayName = @"Now Playing"; // TODO: localize
 
 		// set ourself as only displaying alerts, not sounds or badges
 		identity.defaultSectionInfo.pushSettings = BBSectionInfoPushSettingsAlerts;
@@ -69,9 +69,6 @@ static NSString *const kHBCZNowPlayingCategoryIdentifier = @"CanzoneNowPlayingCa
 		BBSectionInfo *mainSubsection = [BBSectionInfo defaultSectionInfoForType:2];
 		mainSubsection.sectionID = identity.sectionIdentifier;
 		mainSubsection.subsectionID = kHBCZNowPlayingSubsectionIdentifier;
-		mainSubsection.allowsAddingToLockScreenWhenUnlocked = YES;
-		mainSubsection.allowsAutomaticRemovalFromLockScreen = NO;
-		mainSubsection.prioritizeAtTopOfLockScreen = YES;
 
 		identity.defaultSubsectionInfos = @[ mainSubsection ];
 
@@ -79,6 +76,9 @@ static NSString *const kHBCZNowPlayingCategoryIdentifier = @"CanzoneNowPlayingCa
 		BBSectionSubtypeParameters *subtypeParameters = identity.sectionParameters.defaultSubtypeParameters;
 		subtypeParameters.secondaryContentRemoteServiceBundleIdentifier = @"ws.hbang.canzone.app.notificationcontent";
 		subtypeParameters.secondaryContentRemoteViewControllerClassName = @"NotificationViewController";
+		subtypeParameters.allowsAddingToLockScreenWhenUnlocked = YES;
+		subtypeParameters.allowsAutomaticRemovalFromLockScreen = NO;
+		subtypeParameters.prioritizeAtTopOfLockScreen = YES;
 		
 		// construct our “replace lock media controls” subtype
 		BBSectionSubtypeParameters *lockParameters = [[BBSectionSubtypeParameters alloc] init];
@@ -107,7 +107,7 @@ static NSString *const kHBCZNowPlayingCategoryIdentifier = @"CanzoneNowPlayingCa
 	// set the basic stuff
 	bulletin.bulletinID = [NSUUID UUID].UUIDString;
 	bulletin.sectionID = kHBCZAppIdentifier;
-	// bulletin.categoryID = kHBCZNowPlayingCategoryIdentifier;
+	bulletin.categoryID = kHBCZNowPlayingCategoryIdentifier;
 
 	// set the record id based on the keep all bulletins setting
 	bulletin.recordID = bulletin.bulletinID;
