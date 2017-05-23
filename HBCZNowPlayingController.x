@@ -46,48 +46,50 @@
 #pragma mark - Notification callbacks
 
 - (void)_mediaInfoDidChange:(NSNotification *)nsNotification {
-	MRMediaRemoteGetNowPlayingInfo(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(CFDictionaryRef result) {
-		// no really, why would you torture yourself and your clients by designing an api that uses
-		// CF objects?
-		NSDictionary *dictionary = (__bridge NSDictionary *)result;
-		NSString *title = dictionary[(__bridge NSString *)kMRMediaRemoteNowPlayingInfoTitle];
-		NSString *artist = dictionary[(__bridge NSString *)kMRMediaRemoteNowPlayingInfoArtist];
-		NSString *album = dictionary[(__bridge NSString *)kMRMediaRemoteNowPlayingInfoAlbum];
-		NSData *art = dictionary[(__bridge NSString *)kMRMediaRemoteNowPlayingInfoArtworkData];
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 0.2), dispatch_get_main_queue(), ^{
+		MRMediaRemoteGetNowPlayingInfo(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(CFDictionaryRef result) {
+			// no really, why would you torture yourself and your clients by designing an api that uses
+			// CF objects?
+			NSDictionary *dictionary = (__bridge NSDictionary *)result;
+			NSString *title = dictionary[(__bridge NSString *)kMRMediaRemoteNowPlayingInfoTitle];
+			NSString *artist = dictionary[(__bridge NSString *)kMRMediaRemoteNowPlayingInfoArtist];
+			NSString *album = dictionary[(__bridge NSString *)kMRMediaRemoteNowPlayingInfoAlbum];
+			NSData *art = dictionary[(__bridge NSString *)kMRMediaRemoteNowPlayingInfoArtworkData];
 
-		// get the now playing app
-		SBApplication *nowPlayingApp = ((SBMediaController *)[%c(SBMediaController) sharedInstance]).nowPlayingApplication;
+			// get the now playing app
+			SBApplication *nowPlayingApp = ((SBMediaController *)[%c(SBMediaController) sharedInstance]).nowPlayingApplication;
 
-		// no title or app? that’s weird. we can’t really do much without those things
-		if (!title || !nowPlayingApp) {
-			return;
-		}
-
-		// construct our internal identifier
-		NSString *identifier = [NSString stringWithFormat:@"title = %@, artist = %@, album = %@", title, artist, album];
-	
-		// have we just shown one for this? ignore it
-		if ([_lastSongIdentifier isEqualToString:identifier]) {
-			return;
-		}
-
-		// store the identifier
-		_lastSongIdentifier = identifier;
-
-		// get the frontmost app
-		SBApplication *frontmostApp = ((SpringBoard *)[UIApplication sharedApplication])._accessibilityFrontMostApplication;
-
-		// if the now playing provider is enabled, and typestatus plus is present
-		if (_preferences.nowPlayingProvider && %c(HBTSPlusProviderController)) {
-			// as long as this isn’t coming from the frontmost app
-			if (![frontmostApp.bundleIdentifier isEqualToString:nowPlayingApp.bundleIdentifier]) {
-				// post it as a provider notification
-				[self _postProviderNotificationForApp:nowPlayingApp title:title artist:artist];
+			// no title or app? that’s weird. we can’t really do much without those things
+			if (!title || !nowPlayingApp) {
+				return;
 			}
-		} else {
-			// else, post a bulletin
-			[_bulletinProvider postBulletinForApp:nowPlayingApp title:title artist:artist album:album art:art];
-		}
+
+			// construct our internal identifier
+			NSString *identifier = [NSString stringWithFormat:@"title = %@, artist = %@, album = %@", title, artist, album];
+	
+			// have we just shown one for this? ignore it
+			if ([_lastSongIdentifier isEqualToString:identifier]) {
+				return;
+			}
+
+			// store the identifier
+			_lastSongIdentifier = identifier;
+
+			// get the frontmost app
+			SBApplication *frontmostApp = ((SpringBoard *)[UIApplication sharedApplication])._accessibilityFrontMostApplication;
+
+			// if the now playing provider is enabled, and typestatus plus is present
+			if (_preferences.nowPlayingProvider && %c(HBTSPlusProviderController)) {
+				// as long as this isn’t coming from the frontmost app
+				if (![frontmostApp.bundleIdentifier isEqualToString:nowPlayingApp.bundleIdentifier]) {
+					// post it as a provider notification
+					[self _postProviderNotificationForApp:nowPlayingApp title:title artist:artist];
+				}
+			} else {
+				// else, post a bulletin
+				[_bulletinProvider postBulletinForApp:nowPlayingApp title:title artist:artist album:album art:art];
+			}
+		});
 	});
 }
 
