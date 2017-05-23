@@ -1,6 +1,14 @@
 #import "HBCZNowPlayingBulletinProvider.h"
 #import "HBCZNowPlayingController.h"
+#import "HBCZPreferences.h"
 #import <BulletinBoard/BBLocalDataProviderStore.h>
+#import <SpringBoard/SBMediaController.h>
+
+extern NSString *const kHBCZNowPlayingSubsectionIdentifier;
+
+#pragma mark - Variables
+
+HBCZPreferences *preferences;
 
 #pragma mark - Notification Center
 
@@ -11,6 +19,22 @@
 
 	// add ourself as a data provider
 	[self addDataProvider:[HBCZNowPlayingBulletinProvider sharedInstance] performMigration:YES];
+}
+
+%end
+
+#pragma mark - Hide banner in foreground app
+
+%hook SBApplication
+
+- (BOOL)shouldSuppressAlertForSuppressionContexts:(id)suppressionContexts sectionIdentifier:(NSString *)sectionIdentifier {
+	// if this is a bulletin coming from our section, and we’re inside the now playing app, indicate
+	// to not show the alert (banner)
+	if ([sectionIdentifier isEqualToString:kHBCZNowPlayingSubsectionIdentifier] && ((SBMediaController *)[%c(SBMediaController) sharedInstance]).nowPlayingApplication == self) {
+		return YES;
+	}
+
+	return %orig;
 }
 
 %end
@@ -30,6 +54,9 @@
 #pragma mark - Constructor
 
 %ctor {
+	// set up variables
+	preferences = [HBCZPreferences sharedInstance];
+
 	// get the controller rolling
 	[HBCZNowPlayingController sharedInstance];
 }

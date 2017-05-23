@@ -12,7 +12,7 @@
 #import <BulletinBoard/BBThumbnailSizeConstraints.h>
 #import <SpringBoard/SBApplication.h>
 
-static NSString *const kHBCZNowPlayingSubsectionIdentifier = @"ws.hbang.canzone.nowplayingsection";
+NSString *const kHBCZNowPlayingSubsectionIdentifier = @"ws.hbang.canzone.nowplayingsection";
 static NSString *const kHBCZNowPlayingLockSubsectionIdentifier = @"ws.hbang.canzone.nowplayinglocksection";
 static NSString *const kHBCZNowPlayingBulletinRecordIdentifier = @"ws.hbang.canzone.nowplaying";
 static NSString *const kHBCZNowPlayingCategoryIdentifier = @"CanzoneNowPlayingCategory";
