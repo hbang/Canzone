@@ -60,7 +60,7 @@ static NSString *const kHBCZNowPlayingCategoryIdentifier = @"CanzoneNowPlayingCa
 
 		// give it our identifier and name
 		identity.sectionIdentifier = kHBCZAppIdentifier;
-		identity.sectionDisplayName = @"Now Playing"; // TODO: localize
+		identity.sectionDisplayName = NSLocalizedStringFromTableInBundle(@"NOW_PLAYING_TITLE", @"Localizable", [NSBundle bundleWithPath:@"/Library/PreferenceBundles/Canzone.bundle"], nil);
 
 		// set ourself as only displaying alerts, not sounds or badges
 		identity.defaultSectionInfo.pushSettings = BBSectionInfoPushSettingsAlerts;
