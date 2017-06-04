@@ -2,6 +2,7 @@
 #import <CepheiPrefs/HBAppearanceSettings.h>
 #import <Preferences/PSSpecifier.h>
 #import <Preferences/PSSystemPolicyForApp.h>
+#import <Preferences/PSTableCell.h>
 
 @implementation HBCZRootListController
 
@@ -36,18 +37,19 @@
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-	[self setUpSpecifiers];
+	[self _setUpSpecifiers];
 }
 
 - (void)reloadSpecifiers {
 	[super reloadSpecifiers];
-	[self setUpSpecifiers];
+	[self _setUpSpecifiers];
 }
 
-- (void)setUpSpecifiers {
+- (void)_setUpSpecifiers {
 	// grab the typestatus plus bundle
 	NSBundle *plusBundle = [NSBundle bundleWithPath:@"/Library/PreferenceBundles/TypeStatusPlus.bundle"];
 	PSSpecifier *notificationSpecifier;
+	BOOL providerEnabled = NO;
 
 	// remove specifiers based on whether it’s installed or not
 	if (plusBundle.executableURL) {
@@ -55,6 +57,7 @@
 		[self removeSpecifierID:@"TypeStatusPlusNotInstalledGroup"];
 		[self removeSpecifierID:@"TypeStatusPlusNotInstalled"];
 		notificationSpecifier = [self specifierForID:@"TypeStatusPlusNotificationsGroup"];
+		providerEnabled = ((NSNumber *)[self readPreferenceValue:[self specifierForID:@"TypeStatusPlus"]]).boolValue;
 	} else {
 		[self removeSpecifierID:@"TypeStatusPlusNotificationsGroup"];
 		[self removeSpecifierID:@"TypeStatusPlusGroup"];
@@ -62,15 +65,46 @@
 		notificationSpecifier = [self specifierForID:@"NotificationsGroup"];
 	}
 
-	// construct a system notification settings cell
-	PSSystemPolicyForApp *policy = [[PSSystemPolicyForApp alloc] initWithBundleIdentifier:@"ws.hbang.canzone.app"];
+	// if we don’t already have a notifications cell
+	if (![self specifierForID:@"NOTIFICATIONS"]) {
+		// construct a system notification settings cell
+		PSSystemPolicyForApp *policy = [[PSSystemPolicyForApp alloc] initWithBundleIdentifier:@"ws.hbang.canzone.app"];
 
-	// this usually returns an array of specifiers, including the “allow [app] to access” group
-	// specifier, which we kinda don’t want. after this method does its thing, notificationSpecifier
-	// will be non-nil, and we can just add that
-	[policy specifiersForPolicyOptions:PSSystemPolicyOptionsNotifications force:YES];
-	
-	[self insertSpecifier:policy.notificationSpecifier afterSpecifier:notificationSpecifier];
+		// this usually returns an array of specifiers, including the “allow [app] to access” group
+		// specifier, which we kinda don’t want. after this method does its thing, notificationSpecifier
+		// will be non-nil, and we can just add that
+		[policy specifiersForPolicyOptions:PSSystemPolicyOptionsNotifications force:YES];
+		
+		[self insertSpecifier:policy.notificationSpecifier afterSpecifier:notificationSpecifier];
+	}
+
+	BOOL doDisable = NO;
+
+	// this kinda silly for loop will disable the notification cells when the provider is enabled
+	for (PSSpecifier *specifier in _specifiers) {
+		// if we’re at the start of the notifications group, we know to start on the next specifier. if
+		// we’re at the start of the about group, we can stop on this specifier. otherwise, if we’re
+		// in the notification cells area, set the cells and specifiers’ enabled state accordingly
+		if (specifier == notificationSpecifier) {
+			doDisable = YES;
+		} else if ([specifier.identifier isEqualToString:@"AboutGroup"]) {
+			doDisable = NO;
+		} else if (doDisable) {
+			specifier.properties[PSEnabledKey] = @(!providerEnabled);
+			PSTableCell *cell = [self cachedCellForSpecifier:specifier];
+			cell.cellEnabled = !providerEnabled;
+		}
+	}
+}
+
+- (void)setPreferenceValue:(id)value specifier:(PSSpecifier *)specifier {
+	[super setPreferenceValue:value specifier:specifier];
+
+	// if the typestatus plus specifier has been toggled, update the enabled/disabled state of the
+	// notification specifiers
+	if ([specifier.identifier isEqualToString:@"TypeStatusPlus"]) {
+		[self _setUpSpecifiers];
+	}
 }
 
 @end
