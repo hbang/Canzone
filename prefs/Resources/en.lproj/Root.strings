@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<!-- Default text for sharing the tweak. %@ is the device type (ie, iPhone). -->
+	<key>SHARE_TEXT</key>
+	<string>I’m enjoying now playing notifications on my %@ with Canzone by HASHBANG Productions! 🎧</string>
+
 	<!-- Explanation of how to enable the now playing widget. -->
 	<key>WIDGET_EXPLANATION</key>
 	<string>Enable the Now Playing widget via the Notification Center Today page.</string>
