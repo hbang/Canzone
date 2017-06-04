@@ -1,6 +1,6 @@
 Package: ws.hbang.canzone
 Name: Canzone
-Depends: firmware (>= 10.0), firmware (<< 10.3), mobilesubstrate, preferenceloader, ws.hbang.common (>= 1.10)
+Depends: firmware (>= 10.0), firmware (<< 10.3), mobilesubstrate, preferenceloader, ws.hbang.common (>= 1.11)
 Suggests: ws.hbang.typestatusplus
 Conflicts: ws.hbang.typestatusplusproviders (<< 1.1)
 Replaces: ws.hbang.typestatusplusproviders (<< 1.1)
