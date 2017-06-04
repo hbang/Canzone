@@ -3,6 +3,7 @@
 #import <Preferences/PSSpecifier.h>
 #import <Preferences/PSSystemPolicyForApp.h>
 #import <Preferences/PSTableCell.h>
+#import <UIKit/UIImage+Private.h>
 
 @implementation HBCZRootListController
 
@@ -29,6 +30,12 @@
 	if (self) {
 		HBAppearanceSettings *appearanceSettings = [[HBAppearanceSettings alloc] init];
 		appearanceSettings.tintColor = [UIColor colorWithRed:255.f / 255.f green:45.f / 255.f blue:85.f / 255.f alpha:1];
+		appearanceSettings.navigationBarBackgroundColor = [UIColor colorWithRed:250.f / 255.f green:70.f / 255.f blue:85.f / 255.f alpha:1];
+		appearanceSettings.navigationBarTitleColor = [UIColor whiteColor];
+		appearanceSettings.navigationBarTintColor = [UIColor colorWithWhite:1 alpha:0.85f];
+		appearanceSettings.statusBarTintColor = appearanceSettings.navigationBarTintColor;
+		appearanceSettings.translucentNavigationBar = NO;
+		appearanceSettings.tableViewBackgroundColor = [UIColor colorWithWhite:0.95f alpha:1];
 		self.hb_appearanceSettings = appearanceSettings;
 	}
 
@@ -38,6 +45,16 @@
 - (void)viewDidLoad {
 	[super viewDidLoad];
 	[self _setUpSpecifiers];
+
+	// swap the title label with our icon
+	UIImage *icon = [UIImage imageNamed:@"icon" inBundle:[NSBundle bundleForClass:self.class]];
+	self.navigationItem.titleView = [[UIImageView alloc] initWithImage:icon];
+
+	// set up a view that shows when overscrolling beyond the top of the scroll view
+	UIView *overscrollView = [[UIView alloc] initWithFrame:CGRectMake(0, -1000.f, self.view.frame.size.width, 1000.f)];
+	overscrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+	overscrollView.backgroundColor = self.hb_appearanceSettings.navigationBarBackgroundColor;
+	[self.table addSubview:overscrollView];
 }
 
 - (void)reloadSpecifiers {
