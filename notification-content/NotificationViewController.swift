@@ -12,15 +12,27 @@ class NotificationViewController: UIViewController, UNNotificationContentExtensi
 	var controlsViewController: MPUControlCenterMediaControlsViewController!
 
 	var artworkView: MPUNowPlayingArtworkView!
-	var infoLabel: UILabel!
+	var labelsContainerView: UIView!
+
+	var titleLabel: UIView!
+	var albumLabel: UIView!
+	var artistLabel: UIView!
 	var transportControls: UIView!
+
+	var titleLabelHeightConstraint: NSLayoutConstraint!
+	var albumLabelHeightConstraint: NSLayoutConstraint!
+	var artistLabelHeightConstraint: NSLayoutConstraint!
 	
 	// MARK: - View controller
 	
 	override func loadView() {
 		super.loadView()
 
-		view.translatesAutoresizingMaskIntoConstraints = false
+		view.autoresizingMask = [ .flexibleWidth ]
+
+		let containerView = UIView()
+		containerView.translatesAutoresizingMaskIntoConstraints = false
+		view.addSubview(containerView)
 		
 		// construct the views
 		// we disable user interaction on the artworkView as this allows touches to fall through to the
@@ -29,76 +41,138 @@ class NotificationViewController: UIViewController, UNNotificationContentExtensi
 		artworkView.activated = true
 		artworkView.translatesAutoresizingMaskIntoConstraints = false
 		artworkView.isUserInteractionEnabled = false
-		view.addSubview(artworkView)
+		containerView.addSubview(artworkView)
 
-		let labelsContainerView = UIView()
+		labelsContainerView = UIView()
 		labelsContainerView.translatesAutoresizingMaskIntoConstraints = false
-		view.addSubview(labelsContainerView)
-
-		infoLabel = UILabel()
-		infoLabel.translatesAutoresizingMaskIntoConstraints = false
-		infoLabel.numberOfLines = 0
-		labelsContainerView.addSubview(infoLabel)
+		containerView.addSubview(labelsContainerView)
 
 		// steal the transport controls from MPUControlCenterMediaControlsViewController, which will
 		// manage them for us
-		controlsViewController = MPUControlCenterMediaControlsViewController()
-		transportControls = controlsViewController.view.transportControls
-		transportControls.translatesAutoresizingMaskIntoConstraints = false
-		labelsContainerView.addSubview(transportControls)
+		controlsViewController = MediaControlsViewController()
+		let controlsView = controlsViewController.view!
 
+		transportControls = controlsView.transportControls
+		transportControls.translatesAutoresizingMaskIntoConstraints = false
+		containerView.addSubview(transportControls)
+
+		// also steal the labels
+		titleLabel = controlsView.value(forKey: "_titleLabel") as! UIView
+		titleLabel.translatesAutoresizingMaskIntoConstraints = false
+		labelsContainerView.addSubview(titleLabel)
+
+		albumLabel = controlsView.value(forKey: "_albumLabel") as! UIView
+		albumLabel.translatesAutoresizingMaskIntoConstraints = false
+		labelsContainerView.addSubview(albumLabel)
+
+		artistLabel = controlsView.value(forKey: "_artistLabel") as! UIView
+		artistLabel.translatesAutoresizingMaskIntoConstraints = false
+		labelsContainerView.addSubview(artistLabel)
+
+		titleLabelHeightConstraint = NSLayoutConstraint(item: titleLabel, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 0)
+		albumLabelHeightConstraint = NSLayoutConstraint(item: albumLabel, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 0)
+		artistLabelHeightConstraint = NSLayoutConstraint(item: artistLabel, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 0)
+		
+		labelsContainerView.addConstraints([
+			titleLabelHeightConstraint,
+			albumLabelHeightConstraint,
+			artistLabelHeightConstraint
+		])
+
+		// sean spacer
+		let spacerView = UIView()
+		labelsContainerView.addSubview(spacerView)
+
+		// do that auto layout stuff
 		let metrics: [String: NSNumber] = [
-			"outerMargin": 20,
+			"outerMargin": 14,
 			"innerMargin": 15,
 			"labelSpacing": 4,
-			"artworkSize": 151,
+			"labelsContainerSpacing": 2,
 			"controlsMargin": 15,
 			"transportControlsHeight": 44
 		]
 
 		let views: [String: UIView] = [
 			"view": view,
+			"containerView": containerView,
+
 			"artworkView": artworkView,
 			"labelsContainerView": labelsContainerView,
-			"infoLabel": infoLabel,
-			"transportControls": transportControls
+			"transportControls": transportControls,
+			
+			"titleLabel": titleLabel,
+			"albumLabel": albumLabel,
+			"artistLabel": artistLabel,
+			"spacerView": spacerView
 		]
 
 		view.hb_addCompactConstraints([
-			"artworkView.width = artworkSize",
-			"artworkView.height = artworkSize",
-			"artworkView.top = view.top + outerMargin",
-			"artworkView.left = view.left + outerMargin",
-			"artworkView.bottom = view.bottom - outerMargin",
-			"labelsContainerView.left = artworkView.right + innerMargin",
-			"labelsContainerView.right = view.right - outerMargin",
-			"labelsContainerView.centerY = artworkView.centerY"
-		], metrics: metrics, views: views)
+			"self.height = self.width * 0.4",
 
-		labelsContainerView.hb_addCompactConstraints([
-			"infoLabel.top = self.top",
-			"infoLabel.left = self.left",
-			"infoLabel.right = self.right",
-			"transportControls.top = infoLabel.bottom",
-			"transportControls.left = self.left + controlsMargin",
-			"transportControls.right = self.right + controlsMargin",
+			"containerView.top = self.top + outerMargin",
+			"containerView.leading = self.leading + outerMargin",
+			"containerView.trailing = self.trailing - outerMargin",
+			"containerView.bottom = self.bottom - outerMargin"
+		], metrics: metrics, views: views)
+		
+		containerView.hb_addCompactConstraints([
+			"artworkView.top = self.top",
+			"artworkView.leading = self.leading",
+			"artworkView.bottom = self.bottom",
+			"artworkView.width = self.height",
+
+			"labelsContainerView.top = self.top + labelsContainerSpacing",
+			"labelsContainerView.leading = artworkView.trailing + innerMargin",
+			"labelsContainerView.trailing = self.trailing - outerMargin",
+
+			"transportControls.top = labelsContainerView.bottom",
+			"transportControls.leading = labelsContainerView.leading + controlsMargin",
+			"transportControls.trailing = labelsContainerView.trailing - controlsMargin",
 			"transportControls.bottom = self.bottom",
 			"transportControls.height = transportControlsHeight"
 		], metrics: metrics, views: views)
 
+		labelsContainerView.hb_addCompactConstraints([
+			"titleLabel.top = self.top",
+			"titleLabel.leading = self.leading",
+			"titleLabel.trailing = self.trailing",
+
+			"albumLabel.top = titleLabel.bottom + labelSpacing",
+			"albumLabel.leading = self.leading",
+			"albumLabel.trailing = self.trailing",
+
+			"artistLabel.top = albumLabel.bottom + labelSpacing",
+			"artistLabel.leading = self.leading",
+			"artistLabel.trailing = self.trailing",
+
+			"spacerView.top = titleLabel.bottom + labelSpacing",
+			"spacerView.leading = self.leading",
+			"spacerView.trailing = self.trailing",
+			"spacerView.bottom = self.bottom"
+		], metrics: metrics, views: views)
+		
+		// set up the now playing controller to send us updates
 		nowPlayingController = MPUNowPlayingController()
 		nowPlayingController.delegate = self
 		nowPlayingController.startUpdating()
+	}
+
+	override func viewWillLayoutSubviews() {
+		super.viewWillLayoutSubviews()
+
+		// the fuck is a greatestFiniteMagnitude? why wasn’t calling it “max”, like, you know, the
+		// maximum number possible for the type, good enough?
+		let size = CGSize(width: labelsContainerView.frame.size.width, height: CGFloat.greatestFiniteMagnitude)
+		titleLabelHeightConstraint.constant = titleLabel.sizeThatFits(size).height
+		albumLabelHeightConstraint.constant = albumLabel.sizeThatFits(size).height
+		artistLabelHeightConstraint.constant = artistLabel.sizeThatFits(size).height
 	}
 
 	// MARK: - Now playing
 
 	func nowPlayingController(_ nowPlayingController: MPUNowPlayingController!, nowPlayingInfoDidChange info: [AnyHashable: Any]!) {
 		artworkView.artworkImage = nowPlayingController.currentNowPlayingArtwork
-
-		let metadata = nowPlayingController.currentNowPlayingMetadata!
-
-		infoLabel.text = "\(metadata.title ?? "")\n\(metadata.album ?? "")\n\(metadata.artist ?? "")"
 
 		/*if nowPlayingController.nowPlayingAppDisplayID == nil {
 			appNameLabel.text = ""
@@ -107,6 +181,8 @@ class NotificationViewController: UIViewController, UNNotificationContentExtensi
 				appNameLabel.text = app.localizedName.localizedUppercase
 			}
 		}*/
+
+		view.setNeedsLayout()
 	}
 
 	func nowPlayingController(_ nowPlayingController: MPUNowPlayingController!, playbackStateDidChange state: Bool) {
