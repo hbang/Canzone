@@ -9,7 +9,7 @@ class NotificationViewController: UIViewController, UNNotificationContentExtensi
 	// we need to keep strong references around to these, otherwise they’d be released by ARC and we
 	// don’t get to have the goodness they provide
 	var nowPlayingController: MPUNowPlayingController!
-	var controlsViewController: MPUControlCenterMediaControlsViewController!
+	var controlsViewController: MediaControlsViewController!
 
 	var artworkView: MPUNowPlayingArtworkView!
 	var labelsContainerView: UIView!
@@ -85,12 +85,15 @@ class NotificationViewController: UIViewController, UNNotificationContentExtensi
 
 		// do that auto layout stuff
 		let metrics: [String: NSNumber] = [
+			"heightFactor": 0.4,
+
 			"outerMargin": 14,
 			"innerMargin": 15,
-			"labelSpacing": 4,
 			"labelsContainerSpacing": 2,
+
+			"labelSpacing": 4,
 			"controlsMargin": 15,
-			"transportControlsHeight": 44
+			"controlsHeight": 44
 		]
 
 		let views: [String: UIView] = [
@@ -108,7 +111,7 @@ class NotificationViewController: UIViewController, UNNotificationContentExtensi
 		]
 
 		view.hb_addCompactConstraints([
-			"self.height = self.width * 0.4",
+			"self.height = self.width * heightFactor",
 
 			"containerView.top = self.top + outerMargin",
 			"containerView.leading = self.leading + outerMargin",
@@ -128,9 +131,9 @@ class NotificationViewController: UIViewController, UNNotificationContentExtensi
 
 			"transportControls.top = labelsContainerView.bottom",
 			"transportControls.leading = labelsContainerView.leading + controlsMargin",
-			"transportControls.trailing = labelsContainerView.trailing - controlsMargin",
+			"transportControls.trailing = labelsContainerView.trailing - controlsMargin / 2",
 			"transportControls.bottom = self.bottom",
-			"transportControls.height = transportControlsHeight"
+			"transportControls.height = controlsHeight"
 		], metrics: metrics, views: views)
 
 		labelsContainerView.hb_addCompactConstraints([
