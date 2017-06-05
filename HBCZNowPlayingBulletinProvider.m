@@ -113,7 +113,7 @@ static NSString *const kHBCZNowPlayingCategoryIdentifier = @"CanzoneNowPlayingCa
 	bulletin.recordID = bulletin.bulletinID;
 
 	// set the subsection based on the hide music controls setting
-	bulletin.subsectionIDs = [NSSet setWithObject:_preferences.hideLockMusicControls ? kHBCZNowPlayingLockSubsectionIdentifier : kHBCZNowPlayingSubsectionIdentifier];
+	bulletin.subsectionIDs = [NSSet setWithObject:kHBCZNowPlayingSubsectionIdentifier];
 
 	// set the text fields
 	bulletin.title = title;
