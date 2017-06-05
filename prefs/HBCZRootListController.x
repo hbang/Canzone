@@ -55,6 +55,14 @@
 	overscrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 	overscrollView.backgroundColor = self.hb_appearanceSettings.navigationBarBackgroundColor;
 	[self.table addSubview:overscrollView];
+
+	UILabel *hiLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 280.f, overscrollView.frame.size.width, 400.f)];
+	hiLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+	hiLabel.textAlignment = NSTextAlignmentCenter;
+	hiLabel.textColor = [UIColor whiteColor];
+	hiLabel.numberOfLines = 0;
+	hiLabel.text = @"Go home, there’s nothing\nto see here.\n\n\n\n🎧🚀✨🤔\n\n\n\nHi.";
+	[overscrollView addSubview:hiLabel];
 }
 
 - (void)reloadSpecifiers {
