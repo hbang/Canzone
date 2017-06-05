@@ -32,5 +32,6 @@ after-stage::
 
 after-install::
 ifeq ($(RESPRING),0)
-	install.exec "uiopen prefs:root=Canzone"
+	#install.exec "uiopen prefs:root=Canzone"
 endif
+	install.exec "killall -KILL CanzoneNotificationContent; killall -KILL CanzoneNotificationContent"

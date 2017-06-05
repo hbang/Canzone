@@ -4,7 +4,7 @@ Depends: firmware (>= 10.0), firmware (<< 10.3), mobilesubstrate, preferenceload
 Suggests: ws.hbang.typestatusplus
 Conflicts: ws.hbang.typestatusplusproviders (<< 1.1)
 Replaces: ws.hbang.typestatusplusproviders (<< 1.1)
-Version: 1.0
+Version: 1.0~beta0
 Architecture: iphoneos-arm
 Description: Widget and notifications for now playing music
 Maintainer: HASHBANG Productions <support@hbang.ws>
