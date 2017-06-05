@@ -55,10 +55,6 @@
 			<string>NOW_PLAYING_BULLETINS_EXPLANATION</string>
 		</dict>
 		<dict>
-			<key>id</key>
-			<string>NotificationsCell</string>
-		</dict>
-		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>footerText</key>
