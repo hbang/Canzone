@@ -26,10 +26,6 @@ SUBPROJECTS += widget notification-content provider prefs postinst app
 include $(THEOS_MAKE_PATH)/aggregate.mk
 endif
 
-after-stage::
-	$(ECHO_NOTHING)mkdir -p $(THEOS_STAGING_DIR)/Applications/Canzone.app/Frameworks$(ECHO_END)
-	$(ECHO_NOTHING)cp libswiftQuartzCore.dylib $(THEOS_STAGING_DIR)/Applications/Canzone.app/Frameworks$(ECHO_END)
-
 after-install::
 ifeq ($(RESPRING),0)
 	install.exec "uiopen prefs:root=Canzone"
