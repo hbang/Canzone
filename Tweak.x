@@ -5,6 +5,19 @@
 #import <SpringBoard/SBMediaController.h>
 
 
+@interface NCNotificationRequest : NSObject // UNUIKit
+
+@property (nonatomic, copy, readonly) NSString *sectionIdentifier;
+
+@end
+
+@interface NCNotificationExtensionContainerViewController : UIViewController
+
+@property (nonatomic) BOOL userInteractionEnabled;
+
+@end
+
+
 #pragma mark - Variables
 
 HBCZPreferences *preferences;
@@ -46,6 +59,25 @@ HBCZPreferences *preferences;
 	// TODO: work out the enum values
 	// but basically, anything over 2 is “enabled”, 0 and 1 are “disabled” in some way
 	%orig(preferences.hideLockMusicControls && state > 1 ? 0 : state);
+}
+
+%end
+
+#pragma mark - Enable user interaction
+
+%hook NCNotificationExtensionContainerViewController
+
+- (instancetype)initWithExtension:(id)extension forNotificationRequest:(NCNotificationRequest *)request {
+	self = %orig;
+
+	if (self) {
+		// if this is us, override and allow touches to be sent through to our remote view
+		if ([request.sectionIdentifier isEqualToString:kHBCZAppIdentifier]) {
+			self.userInteractionEnabled = YES;
+		}
+	}
+
+	return self;
 }
 
 %end
