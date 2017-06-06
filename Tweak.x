@@ -4,7 +4,6 @@
 #import <BulletinBoard/BBLocalDataProviderStore.h>
 #import <SpringBoard/SBMediaController.h>
 
-extern NSString *const kHBCZNowPlayingSubsectionIdentifier;
 
 #pragma mark - Variables
 
@@ -30,7 +29,7 @@ HBCZPreferences *preferences;
 - (BOOL)shouldSuppressAlertForSuppressionContexts:(id)suppressionContexts sectionIdentifier:(NSString *)sectionIdentifier {
 	// if this is a bulletin coming from our section, and we’re inside the now playing app, indicate
 	// to not show the alert (banner)
-	if ([sectionIdentifier isEqualToString:kHBCZNowPlayingSubsectionIdentifier] && ((SBMediaController *)[%c(SBMediaController) sharedInstance]).nowPlayingApplication == self) {
+	if ([sectionIdentifier isEqualToString:kHBCZAppIdentifier] && ((SBMediaController *)[%c(SBMediaController) sharedInstance]).nowPlayingApplication == self) {
 		return YES;
 	}
 
