@@ -138,6 +138,7 @@ static NSString *const kHBCZNowPlayingCategoryIdentifier = @"CanzoneNowPlayingCa
 	// on apple watch, launch NanoNowPlaying
 	// TODO: this doesn’t work :( maybe we’ll have to go back to the phone, then have the phone tell
 	// the watch to open the app
+	/*
 	BBAction *watchAction = [BBAction actionWithAppearance:[BBAppearance appearanceWithTitle:@"Open"]];
 	watchAction.identifier = @"open-on-watch";
 	watchAction.callblock = ^{ HBLogWarn(@"watch out bitchezz"); };
@@ -146,6 +147,7 @@ static NSString *const kHBCZNowPlayingCategoryIdentifier = @"CanzoneNowPlayingCa
 	bulletin.supplementaryActionsByLayout = @{
 		@1: @[ watchAction ]
 	};
+	*/
 
 	// get a UIImage of the art and hold onto it
 	_currentArt = [[UIImage alloc] initWithData:art];
