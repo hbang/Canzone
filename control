@@ -2,7 +2,7 @@ Package: ws.hbang.canzone
 Name: Canzone
 Pre-Depends: org.swift.libswift-3.1-arm64 (>= 3.1.1)
 Depends: firmware (>= 10.0), firmware (<< 10.3), cy+cpu.arm64, mobilesubstrate, preferenceloader, ws.hbang.common (>= 1.11)
-Version: 1.0
+Version: 1.0~beta1
 Architecture: iphoneos-arm
 Description: Widget and notifications for now playing music
 Maintainer: HASHBANG Productions <support@hbang.ws>
