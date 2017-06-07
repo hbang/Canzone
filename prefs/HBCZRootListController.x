@@ -72,18 +72,18 @@
 
 - (void)_setUpSpecifiers {
 	// grab the typestatus plus bundle
-	NSBundle *plusBundle = [NSBundle bundleWithPath:@"/Library/PreferenceBundles/TypeStatusPlus.bundle"];
+	// NSBundle *plusBundle = [NSBundle bundleWithPath:@"/Library/PreferenceBundles/TypeStatusPlus.bundle"];
 	PSSpecifier *notificationSpecifier;
 	BOOL providerEnabled = NO;
 
 	// remove specifiers based on whether it’s installed or not
-	if (plusBundle.executableURL) {
+	/*if (plusBundle.executableURL) {
 		[self removeSpecifierID:@"NotificationsGroup"];
 		[self removeSpecifierID:@"TypeStatusPlusNotInstalledGroup"];
 		[self removeSpecifierID:@"TypeStatusPlusNotInstalled"];
 		notificationSpecifier = [self specifierForID:@"TypeStatusPlusNotificationsGroup"];
 		providerEnabled = ((NSNumber *)[self readPreferenceValue:[self specifierForID:@"TypeStatusPlus"]]).boolValue;
-	} else {
+	} else */ {
 		[self removeSpecifierID:@"TypeStatusPlusNotificationsGroup"];
 		[self removeSpecifierID:@"TypeStatusPlusGroup"];
 		[self removeSpecifierID:@"TypeStatusPlus"];

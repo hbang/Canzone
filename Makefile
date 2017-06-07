@@ -22,7 +22,7 @@ Canzone_CFLAGS = -fobjc-arc
 include $(THEOS_MAKE_PATH)/tweak.mk
 
 ifneq ($(TARGET),simulator)
-SUBPROJECTS += widget notification-content provider prefs postinst app
+SUBPROJECTS += widget notification-content prefs postinst app
 include $(THEOS_MAKE_PATH)/aggregate.mk
 endif
 
