@@ -2,7 +2,9 @@
 #import "HBCZNowPlayingController.h"
 #import "HBCZPreferences.h"
 #import <BulletinBoard/BBLocalDataProviderStore.h>
+#import <UserNotificationsUIKit/NCNotificationViewController.h>
 #import <SpringBoard/SBMediaController.h>
+#import <UIKit/UIView+Private.h>
 
 
 @interface NCNotificationRequest : NSObject // UNUIKit
@@ -78,6 +80,36 @@ HBCZPreferences *preferences;
 	}
 
 	return self;
+}
+
+%end
+
+@interface NCNotificationContentView : UIView
+
+- (BOOL)_hb_isCanzoneNotification;
+
+@end
+
+%hook NCNotificationContentView
+
+%new - (BOOL)_hb_isCanzoneNotification {
+	NCNotificationViewController *viewController = (NCNotificationViewController *)self._viewControllerForAncestor;
+	NCNotificationRequest *request = viewController.notificationRequest;
+	return request && [request.sectionIdentifier isEqualToString:kHBCZAppIdentifier];
+}
+
+- (BOOL)_shouldReverseLayoutDirection {
+	return self._hb_isCanzoneNotification ? YES : %orig;
+}
+
+- (CGRect)_frameForThumbnailInRect:(CGRect)rect {
+	CGRect newFrame = %orig;
+
+	if (self._hb_isCanzoneNotification) {
+		newFrame.origin.y -= 4.f;
+	}
+
+	return newFrame;
 }
 
 %end
