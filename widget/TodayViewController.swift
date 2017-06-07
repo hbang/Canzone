@@ -17,7 +17,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
 		viewController = MPUControlCenterMediaControlsViewController()
 		
 		// make it fill the entire space
-		viewController.view.frame = CGRect(x: 0, y: 20, width: view.frame.size.width, height: view.frame.size.height - 20)
+		viewController.view.frame = CGRect(x: 0, y: 24, width: view.frame.size.width, height: view.frame.size.height - 24)
 		viewController.view.autoresizingMask = [ .flexibleWidth, .flexibleHeight ]
 		
 		// add it as a child view controller
