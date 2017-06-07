@@ -13,7 +13,6 @@
 #import <SpringBoard/SBApplication.h>
 
 static NSString *const kHBCZNowPlayingSubsectionIdentifier = @"ws.hbang.canzone.nowplayingsection";
-static NSString *const kHBCZNowPlayingLockSubsectionIdentifier = @"ws.hbang.canzone.nowplayinglocksection";
 static NSString *const kHBCZNowPlayingBulletinRecordIdentifier = @"ws.hbang.canzone.nowplaying";
 static NSString *const kHBCZNowPlayingCategoryIdentifier = @"CanzoneNowPlayingCategory";
 
@@ -79,13 +78,6 @@ static NSString *const kHBCZNowPlayingCategoryIdentifier = @"CanzoneNowPlayingCa
 		subtypeParameters.allowsAddingToLockScreenWhenUnlocked = YES;
 		subtypeParameters.allowsAutomaticRemovalFromLockScreen = NO;
 		subtypeParameters.prioritizeAtTopOfLockScreen = YES;
-		
-		// construct our “replace lock media controls” subtype
-		BBSectionSubtypeParameters *lockParameters = [[BBSectionSubtypeParameters alloc] init];
-
-		identity.sectionParameters.allSubtypeParameters = [@{
-			@2: lockParameters
-		} mutableCopy];
 
 		self.identity = identity;
 	}
@@ -108,12 +100,10 @@ static NSString *const kHBCZNowPlayingCategoryIdentifier = @"CanzoneNowPlayingCa
 	bulletin.bulletinID = [NSUUID UUID].UUIDString;
 	bulletin.sectionID = kHBCZAppIdentifier;
 	bulletin.categoryID = kHBCZNowPlayingCategoryIdentifier;
+	bulletin.subsectionIDs = [NSSet setWithObject:kHBCZNowPlayingSubsectionIdentifier];
 
 	// set the record id based on the keep all bulletins setting
 	bulletin.recordID = bulletin.bulletinID;
-
-	// set the subsection based on the hide music controls setting
-	bulletin.subsectionIDs = [NSSet setWithObject:kHBCZNowPlayingSubsectionIdentifier];
 
 	// set the text fields
 	bulletin.title = title;
