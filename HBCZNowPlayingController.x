@@ -12,6 +12,7 @@
 	HBCZPreferences *_preferences;
 	HBCZNowPlayingBulletinProvider *_bulletinProvider;
 
+	NSData *_placeholderArtData;
 	NSString *_lastSongIdentifier;
 }
 
@@ -38,6 +39,10 @@
 
 		// listen for the now playing change notification
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_mediaInfoDidChange:) name:(__bridge NSString *)kMRMediaRemoteNowPlayingInfoDidChangeNotification object:nil];
+
+		NSBundle *mpuiBundle = [NSBundle bundleWithPath:@"/System/Library/PrivateFrameworks/MediaPlayerUI.framework"];
+		UIImage *placeholderImage = [UIImage imageNamed:@"placeholder-artwork" inBundle:mpuiBundle];
+		_placeholderArtData = UIImagePNGRepresentation(placeholderImage);
 	}
 
 	return self;
@@ -46,6 +51,7 @@
 #pragma mark - Notification callbacks
 
 - (void)_mediaInfoDidChange:(NSNotification *)nsNotification {
+	// hack: wait 200ms for art to hopefully be there for us
 	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 0.2), dispatch_get_main_queue(), ^{
 		MRMediaRemoteGetNowPlayingInfo(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(CFDictionaryRef result) {
 			// no really, why would you torture yourself and your clients by designing an api that uses
@@ -54,7 +60,7 @@
 			NSString *title = dictionary[(__bridge NSString *)kMRMediaRemoteNowPlayingInfoTitle];
 			NSString *artist = dictionary[(__bridge NSString *)kMRMediaRemoteNowPlayingInfoArtist];
 			NSString *album = dictionary[(__bridge NSString *)kMRMediaRemoteNowPlayingInfoAlbum];
-			NSData *art = dictionary[(__bridge NSString *)kMRMediaRemoteNowPlayingInfoArtworkData];
+			NSData *art = dictionary[(__bridge NSString *)kMRMediaRemoteNowPlayingInfoArtworkData] ?: _placeholderArtData;
 
 			// get the now playing app
 			SBApplication *nowPlayingApp = ((SBMediaController *)[%c(SBMediaController) sharedInstance]).nowPlayingApplication;
