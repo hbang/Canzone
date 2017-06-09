@@ -94,8 +94,13 @@ HBCZPreferences *preferences;
 
 %new - (BOOL)_hb_isCanzoneNotification {
 	NCNotificationViewController *viewController = (NCNotificationViewController *)self._viewControllerForAncestor;
-	NCNotificationRequest *request = viewController.notificationRequest;
-	return request && [request.sectionIdentifier isEqualToString:kHBCZAppIdentifier];
+
+	if ([viewController isKindOfClass:%c(NCNotificationViewController)]) {
+		NCNotificationRequest *request = viewController.notificationRequest;
+		return request && [request.sectionIdentifier isEqualToString:kHBCZAppIdentifier];
+	} else {
+		return NO;
+	}
 }
 
 - (BOOL)_shouldReverseLayoutDirection {
