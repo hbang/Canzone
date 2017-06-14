@@ -29,6 +29,8 @@ HBCZPreferences *preferences;
 
 %end
 
+%group PhilSchiller
+
 #pragma mark - Hide banner in foreground app
 
 %hook SBApplication
@@ -57,6 +59,8 @@ HBCZPreferences *preferences;
 
 %end
 
+%end
+
 #pragma mark - Constructor
 
 %ctor {
@@ -65,4 +69,10 @@ HBCZPreferences *preferences;
 
 	// get the controller rolling
 	[HBCZNowPlayingController sharedInstance];
+
+	%init;
+
+	if (IS_IOS_OR_NEWER(iOS_10_0)) {
+		%init(PhilSchiller);
+	}
 }

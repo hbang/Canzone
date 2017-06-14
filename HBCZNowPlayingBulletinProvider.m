@@ -11,6 +11,7 @@
 #import <BulletinBoard/BBServer.h>
 #import <BulletinBoard/BBThumbnailSizeConstraints.h>
 #import <SpringBoard/SBApplication.h>
+#import <version.h>
 
 static NSString *const kHBCZNowPlayingSubsectionIdentifier = @"ws.hbang.canzone.nowplayingsection";
 static NSString *const kHBCZNowPlayingBulletinRecordIdentifier = @"ws.hbang.canzone.nowplaying";
@@ -73,11 +74,14 @@ static NSString *const kHBCZNowPlayingCategoryIdentifier = @"CanzoneNowPlayingCa
 
 		// construct our default subtype parameters
 		BBSectionSubtypeParameters *subtypeParameters = identity.sectionParameters.defaultSubtypeParameters;
-		subtypeParameters.secondaryContentRemoteServiceBundleIdentifier = @"ws.hbang.canzone.app.notificationcontent";
-		subtypeParameters.secondaryContentRemoteViewControllerClassName = @"NotificationViewController";
+		//subtypeParameters.secondaryContentRemoteServiceBundleIdentifier = @"ws.hbang.canzone.app.notificationcontent";
+		//subtypeParameters.secondaryContentRemoteViewControllerClassName = @"NotificationViewController";
 		subtypeParameters.allowsAddingToLockScreenWhenUnlocked = YES;
 		subtypeParameters.allowsAutomaticRemovalFromLockScreen = NO;
-		subtypeParameters.prioritizeAtTopOfLockScreen = YES;
+
+		if (IS_IOS_OR_NEWER(iOS_10_0)) {
+			subtypeParameters.prioritizeAtTopOfLockScreen = YES;
+		}
 
 		self.identity = identity;
 	}
@@ -99,8 +103,12 @@ static NSString *const kHBCZNowPlayingCategoryIdentifier = @"CanzoneNowPlayingCa
 	// set the basic stuff
 	bulletin.bulletinID = [NSUUID UUID].UUIDString;
 	bulletin.sectionID = kHBCZAppIdentifier;
-	bulletin.categoryID = kHBCZNowPlayingCategoryIdentifier;
 	bulletin.subsectionIDs = [NSSet setWithObject:kHBCZNowPlayingSubsectionIdentifier];
+
+	// categories were only introduced in iOS 10
+	if (IS_IOS_OR_NEWER(iOS_10_0)) {
+		bulletin.categoryID = kHBCZNowPlayingCategoryIdentifier;
+	}
 
 	// set the record id based on the keep all bulletins setting
 	bulletin.recordID = bulletin.bulletinID;
@@ -119,8 +127,11 @@ static NSString *const kHBCZNowPlayingCategoryIdentifier = @"CanzoneNowPlayingCa
 	// set all the rest
 	bulletin.date = [NSDate date];
 	bulletin.lastInterruptDate = bulletin.date;
-	bulletin.turnsOnDisplay = _preferences.nowPlayingWakeWhenLocked;
 	bulletin.primaryAttachmentType = BBAttachmentMetadataTypeImage;
+
+	if (IS_IOS_OR_NEWER(iOS_10_0)) {
+		bulletin.turnsOnDisplay = _preferences.nowPlayingWakeWhenLocked;
+	}
 
 	// set a callback to open the app
 	bulletin.defaultAction = [BBAction actionWithLaunchBundleID:app.bundleIdentifier callblock:nil];

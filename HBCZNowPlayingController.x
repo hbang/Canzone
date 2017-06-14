@@ -7,6 +7,7 @@
 #import <SpringBoard/SpringBoard.h>
 #import <TypeStatusPlusProvider/HBTSPlusProvider.h>
 #import <TypeStatusPlusProvider/HBTSPlusProviderController.h>
+#import <UIKit/UIImage+Private.h>
 
 @implementation HBCZNowPlayingController {
 	HBCZPreferences *_preferences;

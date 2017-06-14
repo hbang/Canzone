@@ -8,6 +8,8 @@
 	self = [self initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil specifier:specifier];
 
 	if (self) {
+		self.backgroundColor = nil;
+
 		// construct an attributed string
 		NSString *text = NSLocalizedStringFromTableInBundle(@"AUTHORS_LABEL", @"About", [NSBundle bundleForClass:self.class], @"");
 

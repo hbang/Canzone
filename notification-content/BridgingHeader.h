@@ -2,6 +2,7 @@
 #import <Cephei/UIView+CompactConstraint.h>
 #import <MediaPlayerUI/MPUControlCenterMediaControlsView.h>
 #import <MediaPlayerUI/MPUControlCenterMediaControlsViewController.h>
+#import <MediaPlayerUI/MPUControlCenterMetadataView.h>
 #import <MediaPlayerUI/MPUNowPlayingArtworkView.h>
 #import <MediaPlayerUI/MPUNowPlayingController.h>
 #import <MediaPlayerUI/MPUNowPlayingMetadata.h>
