@@ -40,6 +40,8 @@ func registerPlugin(identifier: String, path: URL) {
 	}
 }
 
+print("Registering components… This might take a moment.")
+
 // register the app, followed by its plugins. ew this could be better :/
 registerApp(identifier: "ws.hbang.canzone.app", path: URL(fileURLWithPath: "/Applications/Canzone.app"))
 registerPlugin(identifier: "ws.hbang.canzone.app.nowplayingwidget", path: URL(fileURLWithPath: "/Applications/Canzone.app/PlugIns/CanzoneNowPlayingWidget.appex"))
