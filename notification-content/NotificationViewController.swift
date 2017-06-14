@@ -14,9 +14,9 @@ class NotificationViewController: UIViewController, UNNotificationContentExtensi
 	var artworkView: MPUNowPlayingArtworkView!
 	var labelsContainerView: UIView!
 
-	var titleLabel: UIView!
-	var albumLabel: UIView!
-	var artistLabel: UIView!
+	var titleLabel: MPUControlCenterMetadataView!
+	var albumLabel: MPUControlCenterMetadataView!
+	var artistLabel: MPUControlCenterMetadataView!
 	var transportControls: UIView!
 
 	var titleLabelHeightConstraint: NSLayoutConstraint!
@@ -57,16 +57,20 @@ class NotificationViewController: UIViewController, UNNotificationContentExtensi
 		containerView.addSubview(transportControls)
 
 		// also steal the labels
-		titleLabel = controlsView.value(forKey: "_titleLabel") as! UIView
+		titleLabel = controlsView.value(forKey: "_titleLabel") as! MPUControlCenterMetadataView
 		titleLabel.translatesAutoresizingMaskIntoConstraints = false
 		labelsContainerView.addSubview(titleLabel)
 
-		albumLabel = controlsView.value(forKey: "_albumLabel") as! UIView
+		albumLabel = controlsView.value(forKey: "_albumLabel") as! MPUControlCenterMetadataView
 		albumLabel.translatesAutoresizingMaskIntoConstraints = false
+		albumLabel.numberOfLines = 1
+		albumLabel.marqueeEnabled = true
 		labelsContainerView.addSubview(albumLabel)
 
-		artistLabel = controlsView.value(forKey: "_artistLabel") as! UIView
+		artistLabel = controlsView.value(forKey: "_artistLabel") as! MPUControlCenterMetadataView
 		artistLabel.translatesAutoresizingMaskIntoConstraints = false
+		artistLabel.numberOfLines = 1
+		artistLabel.marqueeEnabled = true
 		labelsContainerView.addSubview(artistLabel)
 
 		titleLabelHeightConstraint = NSLayoutConstraint(item: titleLabel, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 0)
