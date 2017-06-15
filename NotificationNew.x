@@ -112,7 +112,7 @@
 		}
 
 		controlsView.hidden = NO;
-	} else {
+	} else if (self.hb_canzoneControlsView) {
 		self.hb_canzoneControlsView.hidden = YES;
 	}
 
