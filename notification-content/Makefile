@@ -1,3 +1,5 @@
+TARGET = iphone:10.1:10.0
+
 include $(THEOS)/makefiles/common.mk
 
 APPEX_NAME = CanzoneNotificationContent
