@@ -15,11 +15,11 @@
 
 - (BOOL)_hb_isCanzoneNotification;
 
-@property (nonatomic, retain) UIView *accessoryView;
+@property (nonatomic, retain) UIImage *thumbnail;
 
+@property (nonatomic, retain) NSString *hb_canzoneSongIdentifier;
 @property (nonatomic, retain) HBCZNotificationMediaControlsViewController *hb_canzoneControlsViewController;
 @property (nonatomic, retain) MPUTransportControlsView *hb_canzoneControlsView;
-@property (nonatomic, retain) MPUNowPlayingArtworkView *hb_canzoneArtworkView;
 
 @end
 
@@ -58,8 +58,19 @@
 
 %hook NCNotificationContentView
 
+%property (nonatomic, retain) NSString *hb_canzoneSongIdentifier;
 %property (nonatomic, retain) HBCZNotificationMediaControlsViewController *hb_canzoneControlsViewController;
 %property (nonatomic, retain) MPUTransportControlsView *hb_canzoneControlsView;
+
+- (instancetype)initWithStyle:(NSInteger)style {
+	self = %orig;
+
+	if (self) {
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_hb_canzoneThumbnailChanged:) name:HBCZNowPlayingArtworkChangedNotification object:nil];
+	}
+
+	return self;
+}
 
 %new - (BOOL)_hb_isCanzoneNotification {
 	NCNotificationViewController *viewController = (NCNotificationViewController *)self._viewControllerForAncestor;
@@ -69,6 +80,22 @@
 		return request && [request.sectionIdentifier isEqualToString:kHBCZAppIdentifier];
 	} else {
 		return NO;
+	}
+}
+
+%new - (void)_hb_canzoneThumbnailChanged:(NSNotification *)notification {
+	if (self._hb_isCanzoneNotification) {
+		NSString *identifier = self.hb_canzoneSongIdentifier;
+
+		if (!identifier) {
+			// TODO: this is probably stupidly naive? lol
+			identifier = notification.userInfo[@"identifier"];
+			self.hb_canzoneSongIdentifier = identifier;
+		}
+
+		if ([identifier isEqualToString:notification.userInfo[@"identifier"]]) {
+			self.thumbnail = [UIImage imageWithData:notification.userInfo[@"artwork"]];
+		}
 	}
 }
 
@@ -131,6 +158,8 @@
 }
 
 %end
+
+#pragma mark - Constructor
 
 %ctor {
 	if (IS_IOS_OR_NEWER(iOS_10_0)) {

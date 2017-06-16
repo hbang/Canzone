@@ -74,27 +74,31 @@
 			// construct our internal identifier
 			NSString *identifier = [NSString stringWithFormat:@"title = %@, artist = %@, album = %@", title, artist, album];
 	
-			// have we just shown one for this? ignore it
+			// have we just shown one for this?
 			if ([_lastSongIdentifier isEqualToString:identifier]) {
-				return;
-			}
-
-			// store the identifier
-			_lastSongIdentifier = identifier;
-
-			// get the frontmost app
-			SBApplication *frontmostApp = ((SpringBoard *)[UIApplication sharedApplication])._accessibilityFrontMostApplication;
-
-			// if the now playing provider is enabled, and typestatus plus is present
-			if (_preferences.nowPlayingProvider && %c(HBTSPlusProviderController)) {
-				// as long as this isn’t coming from the frontmost app
-				if (![frontmostApp.bundleIdentifier isEqualToString:nowPlayingApp.bundleIdentifier]) {
-					// post it as a provider notification
-					[self _postProviderNotificationForApp:nowPlayingApp title:title artist:artist];
-				}
+				// the art could have changed. post a notification for it
+				[[NSNotificationCenter defaultCenter] postNotificationName:HBCZNowPlayingArtworkChangedNotification object:nil userInfo:@{
+					@"identifier": identifier,
+					@"artwork": art
+				}];
 			} else {
-				// else, post a bulletin
-				[_bulletinProvider postBulletinForApp:nowPlayingApp title:title artist:artist album:album art:art];
+				// store the identifier
+				_lastSongIdentifier = identifier;
+
+				// get the frontmost app
+				SBApplication *frontmostApp = ((SpringBoard *)[UIApplication sharedApplication])._accessibilityFrontMostApplication;
+
+				// if the now playing provider is enabled, and typestatus plus is present
+				if (_preferences.nowPlayingProvider && %c(HBTSPlusProviderController)) {
+					// as long as this isn’t coming from the frontmost app
+					if (![frontmostApp.bundleIdentifier isEqualToString:nowPlayingApp.bundleIdentifier]) {
+						// post it as a provider notification
+						[self _postProviderNotificationForApp:nowPlayingApp title:title artist:artist];
+					}
+				} else {
+					// else, post a bulletin
+					[_bulletinProvider postBulletinForApp:nowPlayingApp title:title artist:artist album:album art:art];
+				}
 			}
 		});
 	});
