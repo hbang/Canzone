@@ -11,15 +11,7 @@
 
 @interface NCNotificationContentView : UIView
 
-- (UIImageView *)_lazyThumbnailImageView;
-
-- (BOOL)_hb_isCanzoneNotification;
-
 @property (nonatomic, retain) UIImage *thumbnail;
-
-@property (nonatomic, retain) NSString *hb_canzoneSongIdentifier;
-@property (nonatomic, retain) HBCZNotificationMediaControlsViewController *hb_canzoneControlsViewController;
-@property (nonatomic, retain) MPUTransportControlsView *hb_canzoneControlsView;
 
 @end
 
@@ -35,6 +27,28 @@
 
 @end
 
+@interface NCNotificationListViewController : UICollectionViewController
+
+- (NCNotificationRequest *)notificationRequestAtIndexPath:(NSIndexPath *)indexPath;
+
+@end
+
+#pragma mark - Helpers
+
+@interface NCNotificationRequest ()
+
+- (BOOL)hb_isCanzoneNotification;
+
+@end
+
+%hook NCNotificationRequest
+
+%new - (BOOL)hb_isCanzoneNotification {
+	return [self.sectionIdentifier isEqualToString:kHBCZAppIdentifier];
+}
+
+%end
+
 #pragma mark - Enable user interaction
 
 %hook NCNotificationExtensionContainerViewController
@@ -44,7 +58,7 @@
 
 	if (self) {
 		// if this is us, override and allow touches to be sent through to our remote view
-		if ([request.sectionIdentifier isEqualToString:kHBCZAppIdentifier]) {
+		if (request.hb_isCanzoneNotification) {
 			self.userInteractionEnabled = YES;
 		}
 	}
@@ -54,7 +68,54 @@
 
 %end
 
-#pragma mark - Notification UI
+#pragma mark - Reuse identifier hax
+
+static NSString *const kHBCZNowPlayingCellIdentifier = @"CanzoneNowPlayingCellIdentifier";
+
+static BOOL reuseIdentifierHax = NO;
+
+%hook NCNotificationListViewController
+
+- (void)viewDidLoad {
+	%orig;
+
+	// register our custom reuse identifier
+	[self.collectionView registerClass:%c(NCNotificationListCell) forCellWithReuseIdentifier:kHBCZNowPlayingCellIdentifier];
+}
+
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+	// if this notification is one of ours (one of ours. one of ours.) then we apply the custom reuse
+	// id. otherwise, nothing special will happen
+	NCNotificationRequest *request = [self notificationRequestAtIndexPath:indexPath];
+
+	reuseIdentifierHax = request.hb_isCanzoneNotification;
+	UICollectionViewCell *cell = %orig;
+	reuseIdentifierHax = NO;
+
+	return cell;
+}
+
+%end
+
+%hook NCNotificationListCollectionView
+
+- (UICollectionViewCell *)dequeuReusableCellWithReuseIdentifier:(NSString *)reuseIdentifier forIndexPath:(NSIndexPath *)indexPath {
+	return %orig(reuseIdentifierHax ? kHBCZNowPlayingCellIdentifier : reuseIdentifier, indexPath);
+}
+
+%end
+
+#pragma mark - Content view stuff
+
+@interface NCNotificationContentView ()
+
+- (BOOL)_hb_isCanzoneNotification;
+
+@property (nonatomic, retain) NSString *hb_canzoneSongIdentifier;
+@property (nonatomic, retain) HBCZNotificationMediaControlsViewController *hb_canzoneControlsViewController;
+@property (nonatomic, retain) MPUTransportControlsView *hb_canzoneControlsView;
+
+@end
 
 %hook NCNotificationContentView
 
@@ -77,7 +138,7 @@
 
 	if ([viewController isKindOfClass:%c(NCNotificationViewController)]) {
 		NCNotificationRequest *request = viewController.notificationRequest;
-		return request && [request.sectionIdentifier isEqualToString:kHBCZAppIdentifier];
+		return request && request.hb_isCanzoneNotification;
 	} else {
 		return NO;
 	}
@@ -139,8 +200,6 @@
 		}
 
 		controlsView.hidden = NO;
-	} else if (self.hb_canzoneControlsView) {
-		self.hb_canzoneControlsView.hidden = YES;
 	}
 
 	%orig;
