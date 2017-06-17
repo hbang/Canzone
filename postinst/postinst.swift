@@ -47,7 +47,7 @@ func confirmPlugIns() -> DispatchTimeoutResult {
 	let semaphore = DispatchSemaphore(value: 0)
 	var discoverer: PKDiscoveryDriver! = nil
 
-	discoverer = NSExtension.beginMatchingExtensions(attributes: [:], completion: { (result) -> Void in
+	discoverer = NSExtension.beginMatchingExtensions(attributes: [:], completion: { (result) in
 		// get our results, hopefully
 		if let actualResult = result as? [NSExtension] {
 			// filter to ones that are hopefully ours
@@ -76,6 +76,9 @@ print("Registering components… This might take a moment.")
 registerApp(identifier: "ws.hbang.canzone.app", path: URL(fileURLWithPath: "/Applications/Canzone.app"))
 registerPlugIn(identifier: "ws.hbang.canzone.app.nowplayingwidget", path: URL(fileURLWithPath: "/Applications/Canzone.app/PlugIns/CanzoneNowPlayingWidget.appex"))
 registerPlugIn(identifier: "ws.hbang.canzone.app.notificationcontent", path: URL(fileURLWithPath: "/Applications/Canzone.app/PlugIns/CanzoneNotificationContent.appex"))
+
+// this could definitely be better: wait a sec for pkd to work itself out
+Thread.sleep(forTimeInterval: 1)
 
 // it should take only a fraction of a second if it works, so we assume a timeout means we never got
 // anything. by the way, have i mentioned how god damn amazing swifty GCD is??
