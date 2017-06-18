@@ -65,10 +65,37 @@
 	[overscrollView addSubview:hiLabel];
 }
 
+#pragma mark - PSListController
+
 - (void)reloadSpecifiers {
 	[super reloadSpecifiers];
 	[self _setUpSpecifiers];
 }
+
+- (void)setPreferenceValue:(id)value specifier:(PSSpecifier *)specifier {
+	[super setPreferenceValue:value specifier:specifier];
+
+	// if the typestatus plus specifier has been toggled, update the enabled/disabled state of the
+	// notification specifiers
+	if ([specifier.identifier isEqualToString:@"TypeStatusPlus"]) {
+		[self _setUpSpecifiers];
+	}
+}
+
+- (void)showController:(PSViewController *)controller animate:(BOOL)animated {
+	// remove the tint from the notifications vc, because it derps out the alert style section
+	if ([controller isKindOfClass:%c(BulletinBoardAppDetailController)]) {
+		HBAppearanceSettings *appearanceSettings = [self.hb_appearanceSettings copy];
+		appearanceSettings.tintColor = nil;
+		((PSListController *)controller).hb_appearanceSettings = appearanceSettings;
+
+		[UISwitch appearanceWhenContainedInInstancesOfClasses:@[ controller.class ]].onTintColor = self.hb_appearanceSettings.tintColor;
+	}
+
+	[super showController:controller animate:animated];
+}
+
+#pragma mark - Setup
 
 - (void)_setUpSpecifiers {
 	// grab the typestatus plus bundle
@@ -119,16 +146,6 @@
 			PSTableCell *cell = [self cachedCellForSpecifier:specifier];
 			cell.cellEnabled = !providerEnabled;
 		}
-	}
-}
-
-- (void)setPreferenceValue:(id)value specifier:(PSSpecifier *)specifier {
-	[super setPreferenceValue:value specifier:specifier];
-
-	// if the typestatus plus specifier has been toggled, update the enabled/disabled state of the
-	// notification specifiers
-	if ([specifier.identifier isEqualToString:@"TypeStatusPlus"]) {
-		[self _setUpSpecifiers];
 	}
 }
 
