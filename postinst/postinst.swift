@@ -77,6 +77,7 @@ registerApp(identifier: "ws.hbang.canzone.app", path: URL(fileURLWithPath: "/App
 registerPlugIn(identifier: "ws.hbang.canzone.app.nowplayingwidget", path: URL(fileURLWithPath: "/Applications/Canzone.app/PlugIns/CanzoneNowPlayingWidget.appex"))
 registerPlugIn(identifier: "ws.hbang.canzone.app.notificationcontent", path: URL(fileURLWithPath: "/Applications/Canzone.app/PlugIns/CanzoneNotificationContent.appex"))
 
+#if !DEBUG
 // this could definitely be better: wait a sec for pkd to work itself out
 Thread.sleep(forTimeInterval: 1)
 
@@ -85,3 +86,4 @@ Thread.sleep(forTimeInterval: 1)
 if confirmPlugIns() == .timedOut {
 	print("⚠️ Hmm, failed… Please try installing or updating an app from the App Store to activate the widget.")
 }
+#endif
