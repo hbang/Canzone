@@ -10,9 +10,9 @@
 	<key>WIDGET_EXPLANATION</key>
 	<string>Enable the Now Playing widget via the Notification Centre Today page.</string>
 
-	<!-- Label for the notification sample section. -->
-	<key>SAMPLE</key>
-	<string>Sample</string>
+	<!-- Label for the notification preview section. -->
+	<key>PREVIEW</key>
+	<string>Preview</string>
 
 	<!-- Label for the notifications section. -->
 	<key>NOTIFICATIONS</key>

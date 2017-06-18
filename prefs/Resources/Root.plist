@@ -40,13 +40,13 @@
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>label</key>
-			<string>SAMPLE</string>
+			<string>PREVIEW</string>
 		</dict>
 		<dict>
 			<key>cellClass</key>
 			<string>HBCZNotificationTableCell</string>
 			<key>height</key>
-			<integer>116</integer>
+			<integer>122</integer>
 		</dict>
 		<dict>
 			<key>cell</key>

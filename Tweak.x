@@ -67,12 +67,14 @@ HBCZPreferences *preferences;
 	// set up variables
 	preferences = [HBCZPreferences sharedInstance];
 
-	// get the controller rolling
-	[HBCZNowPlayingController sharedInstance];
+	if (IN_SPRINGBOARD) {
+		// get the controller rolling
+		[HBCZNowPlayingController sharedInstance];
 
-	%init;
+		%init;
 
-	if (IS_IOS_OR_NEWER(iOS_10_0)) {
-		%init(PhilSchiller);
+		if (IS_IOS_OR_NEWER(iOS_10_0)) {
+			%init(PhilSchiller);
+		}
 	}
 }

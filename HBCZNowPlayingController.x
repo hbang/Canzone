@@ -30,6 +30,10 @@
 #pragma mark - NSObject
 
 - (instancetype)init {
+	if (!IN_SPRINGBOARD) {
+		return nil;
+	}
+
 	self = [super init];
 
 	if (self) {
