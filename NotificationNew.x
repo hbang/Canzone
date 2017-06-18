@@ -99,7 +99,7 @@ static BOOL reuseIdentifierHax = NO;
 
 %hook NCNotificationListCollectionView
 
-- (UICollectionViewCell *)dequeuReusableCellWithReuseIdentifier:(NSString *)reuseIdentifier forIndexPath:(NSIndexPath *)indexPath {
+- (UICollectionViewCell *)dequeueReusableCellWithReuseIdentifier:(NSString *)reuseIdentifier forIndexPath:(NSIndexPath *)indexPath {
 	return %orig(reuseIdentifierHax ? kHBCZNowPlayingCellIdentifier : reuseIdentifier, indexPath);
 }
 
