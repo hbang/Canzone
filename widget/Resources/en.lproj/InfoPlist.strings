@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<!-- Title displayed above the widget. -->
-	<key>CFBundleName</string>
+	<key>CFBundleName</key>
 	<string>Now Playing</string>
 </dict>
 </plist>
