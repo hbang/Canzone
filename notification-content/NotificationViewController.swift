@@ -4,15 +4,15 @@ import UserNotificationsUI
 
 @objc(NotificationViewController)
 class NotificationViewController: UIViewController, UNNotificationContentExtension {
-	
+
 	// MARK: - View controller
 
-	override func loadView() {
+	func loadView() {
 		super.loadView()
-		
+
 		// instantiate the view controller
 		let viewController = MediaControlsViewController()
-		
+
 		// make it fill the entire space
 		viewController.view.frame = view.bounds
 		viewController.view.autoresizingMask = [ .flexibleWidth, .flexibleHeight ]

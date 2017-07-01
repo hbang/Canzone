@@ -1,7 +1,6 @@
-export TARGET = iphone:10.1:10.0
+export TARGET = iphone:10.1:9.0
 
-# since this is for iOS 10 only, and there isn’t a jailbreak for 32-bit devices yet, cheat a bit
-# and only build for arm64
+# we’re only supporting arm64. sorry
 export ARCHS = arm64
 
 INSTALL_TARGET_PROCESSES = Preferences CanzoneNowPlayingWidget CanzoneNotificationContent
@@ -15,20 +14,16 @@ include $(THEOS)/makefiles/common.mk
 TWEAK_NAME = Canzone
 Canzone_FILES = $(wildcard *.x) $(wildcard *.m)
 Canzone_FRAMEWORKS = UIKit
-Canzone_PRIVATE_FRAMEWORKS = BulletinBoard MediaRemote
+Canzone_PRIVATE_FRAMEWORKS = BulletinBoard MediaPlayerUI MediaRemote
 Canzone_EXTRA_FRAMEWORKS = Cephei
 Canzone_CFLAGS = -fobjc-arc
 
 include $(THEOS_MAKE_PATH)/tweak.mk
 
 ifneq ($(TARGET),simulator)
-SUBPROJECTS += widget notification-content provider prefs postinst app
+SUBPROJECTS += widget notification-content prefs postinst app
 include $(THEOS_MAKE_PATH)/aggregate.mk
 endif
-
-after-stage::
-	$(ECHO_NOTHING)mkdir -p $(THEOS_STAGING_DIR)/Applications/Canzone.app/Frameworks$(ECHO_END)
-	$(ECHO_NOTHING)cp libswiftQuartzCore.dylib $(THEOS_STAGING_DIR)/Applications/Canzone.app/Frameworks$(ECHO_END)
 
 after-install::
 ifeq ($(RESPRING),0)

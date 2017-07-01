@@ -39,6 +39,18 @@
 		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>PREVIEW</string>
+		</dict>
+		<dict>
+			<key>cellClass</key>
+			<string>HBCZNotificationTableCell</string>
+			<key>height</key>
+			<integer>122</integer>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
 			<key>id</key>
 			<string>TypeStatusPlusNotificationsGroup</string>
 			<key>label</key>

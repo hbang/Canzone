@@ -3,8 +3,14 @@
 #import "HBCZPreferences.h"
 #import <BulletinBoard/BBLocalDataProviderStore.h>
 #import <SpringBoard/SBMediaController.h>
+#import <version.h>
 
-extern NSString *const kHBCZNowPlayingSubsectionIdentifier;
+@interface NCNotificationRequest : NSObject // UNKit
+
+@property (nonatomic, copy, readonly) NSString *sectionIdentifier;
+
+@end
+
 
 #pragma mark - Variables
 
@@ -23,6 +29,8 @@ HBCZPreferences *preferences;
 
 %end
 
+%group PhilSchiller
+
 #pragma mark - Hide banner in foreground app
 
 %hook SBApplication
@@ -30,7 +38,7 @@ HBCZPreferences *preferences;
 - (BOOL)shouldSuppressAlertForSuppressionContexts:(id)suppressionContexts sectionIdentifier:(NSString *)sectionIdentifier {
 	// if this is a bulletin coming from our section, and we’re inside the now playing app, indicate
 	// to not show the alert (banner)
-	if ([sectionIdentifier isEqualToString:kHBCZNowPlayingSubsectionIdentifier] && ((SBMediaController *)[%c(SBMediaController) sharedInstance]).nowPlayingApplication == self) {
+	if ([sectionIdentifier isEqualToString:kHBCZAppIdentifier] && ((SBMediaController *)[%c(SBMediaController) sharedInstance]).nowPlayingApplication == self) {
 		return YES;
 	}
 
@@ -51,12 +59,22 @@ HBCZPreferences *preferences;
 
 %end
 
+%end
+
 #pragma mark - Constructor
 
 %ctor {
 	// set up variables
 	preferences = [HBCZPreferences sharedInstance];
 
-	// get the controller rolling
-	[HBCZNowPlayingController sharedInstance];
+	if (IN_SPRINGBOARD) {
+		// get the controller rolling
+		[HBCZNowPlayingController sharedInstance];
+
+		%init;
+
+		if (IS_IOS_OR_NEWER(iOS_10_0)) {
+			%init(PhilSchiller);
+		}
+	}
 }

@@ -7,11 +7,13 @@
 #import <SpringBoard/SpringBoard.h>
 #import <TypeStatusPlusProvider/HBTSPlusProvider.h>
 #import <TypeStatusPlusProvider/HBTSPlusProviderController.h>
+#import <UIKit/UIImage+Private.h>
 
 @implementation HBCZNowPlayingController {
 	HBCZPreferences *_preferences;
 	HBCZNowPlayingBulletinProvider *_bulletinProvider;
 
+	NSData *_placeholderArtData;
 	NSString *_lastSongIdentifier;
 }
 
@@ -28,6 +30,10 @@
 #pragma mark - NSObject
 
 - (instancetype)init {
+	if (!IN_SPRINGBOARD) {
+		return nil;
+	}
+
 	self = [super init];
 
 	if (self) {
@@ -38,6 +44,10 @@
 
 		// listen for the now playing change notification
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_mediaInfoDidChange:) name:(__bridge NSString *)kMRMediaRemoteNowPlayingInfoDidChangeNotification object:nil];
+
+		NSBundle *mpuiBundle = [NSBundle bundleWithPath:@"/System/Library/PrivateFrameworks/MediaPlayerUI.framework"];
+		UIImage *placeholderImage = [UIImage imageNamed:@"placeholder-artwork" inBundle:mpuiBundle];
+		_placeholderArtData = UIImagePNGRepresentation(placeholderImage);
 	}
 
 	return self;
@@ -46,6 +56,7 @@
 #pragma mark - Notification callbacks
 
 - (void)_mediaInfoDidChange:(NSNotification *)nsNotification {
+	// hack: wait 200ms for art to hopefully be there for us
 	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 0.2), dispatch_get_main_queue(), ^{
 		MRMediaRemoteGetNowPlayingInfo(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(CFDictionaryRef result) {
 			// no really, why would you torture yourself and your clients by designing an api that uses
@@ -54,7 +65,7 @@
 			NSString *title = dictionary[(__bridge NSString *)kMRMediaRemoteNowPlayingInfoTitle];
 			NSString *artist = dictionary[(__bridge NSString *)kMRMediaRemoteNowPlayingInfoArtist];
 			NSString *album = dictionary[(__bridge NSString *)kMRMediaRemoteNowPlayingInfoAlbum];
-			NSData *art = dictionary[(__bridge NSString *)kMRMediaRemoteNowPlayingInfoArtworkData];
+			NSData *art = dictionary[(__bridge NSString *)kMRMediaRemoteNowPlayingInfoArtworkData] ?: _placeholderArtData;
 
 			// get the now playing app
 			SBApplication *nowPlayingApp = ((SBMediaController *)[%c(SBMediaController) sharedInstance]).nowPlayingApplication;
@@ -67,27 +78,31 @@
 			// construct our internal identifier
 			NSString *identifier = [NSString stringWithFormat:@"title = %@, artist = %@, album = %@", title, artist, album];
 	
-			// have we just shown one for this? ignore it
+			// have we just shown one for this?
 			if ([_lastSongIdentifier isEqualToString:identifier]) {
-				return;
-			}
-
-			// store the identifier
-			_lastSongIdentifier = identifier;
-
-			// get the frontmost app
-			SBApplication *frontmostApp = ((SpringBoard *)[UIApplication sharedApplication])._accessibilityFrontMostApplication;
-
-			// if the now playing provider is enabled, and typestatus plus is present
-			if (_preferences.nowPlayingProvider && %c(HBTSPlusProviderController)) {
-				// as long as this isn’t coming from the frontmost app
-				if (![frontmostApp.bundleIdentifier isEqualToString:nowPlayingApp.bundleIdentifier]) {
-					// post it as a provider notification
-					[self _postProviderNotificationForApp:nowPlayingApp title:title artist:artist];
-				}
+				// the art could have changed. post a notification for it
+				[[NSNotificationCenter defaultCenter] postNotificationName:HBCZNowPlayingArtworkChangedNotification object:nil userInfo:@{
+					@"identifier": identifier,
+					@"artwork": art
+				}];
 			} else {
-				// else, post a bulletin
-				[_bulletinProvider postBulletinForApp:nowPlayingApp title:title artist:artist album:album art:art];
+				// store the identifier
+				_lastSongIdentifier = identifier;
+
+				// get the frontmost app
+				SBApplication *frontmostApp = ((SpringBoard *)[UIApplication sharedApplication])._accessibilityFrontMostApplication;
+
+				// if the now playing provider is enabled, and typestatus plus is present
+				if (_preferences.nowPlayingProvider && %c(HBTSPlusProviderController)) {
+					// as long as this isn’t coming from the frontmost app
+					if (![frontmostApp.bundleIdentifier isEqualToString:nowPlayingApp.bundleIdentifier]) {
+						// post it as a provider notification
+						[self _postProviderNotificationForApp:nowPlayingApp title:title artist:artist];
+					}
+				} else {
+					// else, post a bulletin
+					[_bulletinProvider postBulletinForApp:nowPlayingApp title:title artist:artist album:album art:art];
+				}
 			}
 		});
 	});

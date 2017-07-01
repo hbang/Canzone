@@ -1,10 +1,8 @@
 Package: ws.hbang.canzone
 Name: Canzone
-Depends: firmware (>= 10.0), firmware (<< 10.3), mobilesubstrate, preferenceloader, ws.hbang.common (>= 1.11)
-Suggests: ws.hbang.typestatusplus
-Conflicts: ws.hbang.typestatusplusproviders (<< 1.1)
-Replaces: ws.hbang.typestatusplusproviders (<< 1.1)
-Version: 1.0~beta0
+Pre-Depends: org.swift.libswift-3.1-arm64 (>= 3.1.1)
+Depends: firmware (>= 10.0), firmware (<< 10.3), cy+cpu.arm64, mobilesubstrate, preferenceloader, ws.hbang.common (>= 1.11)
+Version: 1.0~beta2
 Architecture: iphoneos-arm
 Description: Widget and notifications for now playing music
 Maintainer: HASHBANG Productions <support@hbang.ws>
@@ -12,6 +10,6 @@ Author: HASHBANG Productions <support@hbang.ws>
 Section: Tweaks
 Icon: file:///Library/PreferenceBundles/Canzone.bundle/icon@2x.png
 Depiction: https://cydia.hbang.ws/depiction/ws.hbang.canzone/
-Support: https://www.hbang.ws/support/
+Support: https://hbang.ws/support/
 Sponsor: thebigboss.org <http://thebigboss.org>
 dev: hbang

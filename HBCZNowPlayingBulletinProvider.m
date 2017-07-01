@@ -11,9 +11,9 @@
 #import <BulletinBoard/BBServer.h>
 #import <BulletinBoard/BBThumbnailSizeConstraints.h>
 #import <SpringBoard/SBApplication.h>
+#import <version.h>
 
-NSString *const kHBCZNowPlayingSubsectionIdentifier = @"ws.hbang.canzone.nowplayingsection";
-static NSString *const kHBCZNowPlayingLockSubsectionIdentifier = @"ws.hbang.canzone.nowplayinglocksection";
+static NSString *const kHBCZNowPlayingSubsectionIdentifier = @"ws.hbang.canzone.nowplayingsection";
 static NSString *const kHBCZNowPlayingBulletinRecordIdentifier = @"ws.hbang.canzone.nowplaying";
 static NSString *const kHBCZNowPlayingCategoryIdentifier = @"CanzoneNowPlayingCategory";
 
@@ -74,18 +74,14 @@ static NSString *const kHBCZNowPlayingCategoryIdentifier = @"CanzoneNowPlayingCa
 
 		// construct our default subtype parameters
 		BBSectionSubtypeParameters *subtypeParameters = identity.sectionParameters.defaultSubtypeParameters;
-		subtypeParameters.secondaryContentRemoteServiceBundleIdentifier = @"ws.hbang.canzone.app.notificationcontent";
-		subtypeParameters.secondaryContentRemoteViewControllerClassName = @"NotificationViewController";
+		//subtypeParameters.secondaryContentRemoteServiceBundleIdentifier = @"ws.hbang.canzone.app.notificationcontent";
+		//subtypeParameters.secondaryContentRemoteViewControllerClassName = @"NotificationViewController";
 		subtypeParameters.allowsAddingToLockScreenWhenUnlocked = YES;
 		subtypeParameters.allowsAutomaticRemovalFromLockScreen = NO;
-		subtypeParameters.prioritizeAtTopOfLockScreen = YES;
-		
-		// construct our “replace lock media controls” subtype
-		BBSectionSubtypeParameters *lockParameters = [[BBSectionSubtypeParameters alloc] init];
 
-		identity.sectionParameters.allSubtypeParameters = [@{
-			@2: lockParameters
-		} mutableCopy];
+		if (IS_IOS_OR_NEWER(iOS_10_0)) {
+			subtypeParameters.prioritizeAtTopOfLockScreen = YES;
+		}
 
 		self.identity = identity;
 	}
@@ -107,13 +103,15 @@ static NSString *const kHBCZNowPlayingCategoryIdentifier = @"CanzoneNowPlayingCa
 	// set the basic stuff
 	bulletin.bulletinID = [NSUUID UUID].UUIDString;
 	bulletin.sectionID = kHBCZAppIdentifier;
-	bulletin.categoryID = kHBCZNowPlayingCategoryIdentifier;
+	bulletin.subsectionIDs = [NSSet setWithObject:kHBCZNowPlayingSubsectionIdentifier];
+
+	// categories were only introduced in iOS 10
+	if (IS_IOS_OR_NEWER(iOS_10_0)) {
+		bulletin.categoryID = kHBCZNowPlayingCategoryIdentifier;
+	}
 
 	// set the record id based on the keep all bulletins setting
 	bulletin.recordID = bulletin.bulletinID;
-
-	// set the subsection based on the hide music controls setting
-	bulletin.subsectionIDs = [NSSet setWithObject:kHBCZNowPlayingSubsectionIdentifier];
 
 	// set the text fields
 	bulletin.title = title;
@@ -129,8 +127,11 @@ static NSString *const kHBCZNowPlayingCategoryIdentifier = @"CanzoneNowPlayingCa
 	// set all the rest
 	bulletin.date = [NSDate date];
 	bulletin.lastInterruptDate = bulletin.date;
-	bulletin.turnsOnDisplay = _preferences.nowPlayingWakeWhenLocked;
 	bulletin.primaryAttachmentType = BBAttachmentMetadataTypeImage;
+
+	if (IS_IOS_OR_NEWER(iOS_10_0)) {
+		bulletin.turnsOnDisplay = _preferences.nowPlayingWakeWhenLocked;
+	}
 
 	// set a callback to open the app
 	bulletin.defaultAction = [BBAction actionWithLaunchBundleID:app.bundleIdentifier callblock:nil];
@@ -138,6 +139,7 @@ static NSString *const kHBCZNowPlayingCategoryIdentifier = @"CanzoneNowPlayingCa
 	// on apple watch, launch NanoNowPlaying
 	// TODO: this doesn’t work :( maybe we’ll have to go back to the phone, then have the phone tell
 	// the watch to open the app
+	/*
 	BBAction *watchAction = [BBAction actionWithAppearance:[BBAppearance appearanceWithTitle:@"Open"]];
 	watchAction.identifier = @"open-on-watch";
 	watchAction.callblock = ^{ HBLogWarn(@"watch out bitchezz"); };
@@ -146,6 +148,7 @@ static NSString *const kHBCZNowPlayingCategoryIdentifier = @"CanzoneNowPlayingCa
 	bulletin.supplementaryActionsByLayout = @{
 		@1: @[ watchAction ]
 	};
+	*/
 
 	// get a UIImage of the art and hold onto it
 	_currentArt = [[UIImage alloc] initWithData:art];
