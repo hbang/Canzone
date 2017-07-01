@@ -3,24 +3,7 @@ import UserNotifications
 import UserNotificationsUI
 
 @objc(NotificationViewController)
-class NotificationViewController: UIViewController, UNNotificationContentExtension {
-
-	// MARK: - View controller
-
-	func loadView() {
-		super.loadView()
-
-		// instantiate the view controller
-		let viewController = MediaControlsViewController()
-
-		// make it fill the entire space
-		viewController.view.frame = view.bounds
-		viewController.view.autoresizingMask = [ .flexibleWidth, .flexibleHeight ]
-		
-		// add it as a child view controller
-		addChildViewController(viewController)
-		view.addSubview(viewController.view)
-	}
+class NotificationViewController: MediaControlsViewController, UNNotificationContentExtension {
 
 	// MARK: - Notification content
 	

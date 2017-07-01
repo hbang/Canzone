@@ -2,26 +2,39 @@ import UIKit
 import NotificationCenter
 
 @objc(TodayViewController)
-class TodayViewController: UIViewController, NCWidgetProviding {
-
-	var controlsViewController: MediaControlsViewController!
+class TodayViewController: MediaControlsViewController, NCWidgetProviding {
 	
+	// MARK: - Init
+
+	init(nibName: String?, bundle: Bundle?) {
+		super.init(state: .widgetCollapsed)
+	}
+
+	required init(coder: NSCoder) {
+		// shut up
+		fatalError("")
+	}
+
+	// MARK: - View controller
+
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
 		// indicate that we support an expanded style
 		extensionContext!.widgetLargestAvailableDisplayMode = .expanded
-		
-		// instantiate the view controller
-		controlsViewController = MediaControlsViewController(state: controlsState)
-		
-		// make it fill the entire space
-		controlsViewController.view.frame = view.bounds
-		controlsViewController.view.autoresizingMask = [ .flexibleWidth, .flexibleHeight ]
-		
-		// add it as a child view controller
-		addChildViewController(controlsViewController)
-		view.addSubview(controlsViewController.view)
+	}
+
+	// MARK: - Widget
+
+	var controlsState: MediaControlsViewController.InterfaceState {
+		// map the widget display mode to the matching InterfaceState
+		switch extensionContext!.widgetActiveDisplayMode {
+			case .compact:
+				return .widgetCollapsed
+			
+			case .expanded:
+				return .widgetExpanded
+		}
 	}
 	
 	func widgetActiveDisplayModeDidChange(_ activeDisplayMode: NCWidgetDisplayMode, withMaximumSize maxSize: CGSize) {
@@ -31,21 +44,12 @@ class TodayViewController: UIViewController, NCWidgetProviding {
 		preferredContentSize = CGSize(width: maxSize.width, height: min(maxSize.height, 380))
 
 		// set the expanded mode on the controls
-		controlsViewController.setState(controlsState, animated: true)
+		setState(controlsState, animated: true)
 	}
 	
 	func widgetPerformUpdate(completionHandler: (@escaping (NCUpdateResult) -> Void)) {
+		// make the protocol happy by saying we have new data
 		completionHandler(.newData)
-	}
-
-	var controlsState: MediaControlsViewController.InterfaceState {
-		switch extensionContext!.widgetActiveDisplayMode {
-			case .compact:
-				return .widgetCollapsed
-			
-			case .expanded:
-				return .widgetExpanded
-		}
 	}
 	
 }
