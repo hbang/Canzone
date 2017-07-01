@@ -131,10 +131,10 @@ static NSString *const kHBCZNowPlayingCategoryIdentifier = @"CanzoneNowPlayingCa
 
 	if (IS_IOS_OR_NEWER(iOS_10_0)) {
 		bulletin.turnsOnDisplay = _preferences.nowPlayingWakeWhenLocked;
+	} else {
+		// set a callback to open the app
+		bulletin.defaultAction = [BBAction actionWithLaunchBundleID:app.bundleIdentifier callblock:nil];
 	}
-
-	// set a callback to open the app
-	bulletin.defaultAction = [BBAction actionWithLaunchBundleID:app.bundleIdentifier callblock:nil];
 
 	// on apple watch, launch NanoNowPlaying
 	// TODO: this doesn’t work :( maybe we’ll have to go back to the phone, then have the phone tell
