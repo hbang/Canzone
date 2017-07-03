@@ -8,7 +8,7 @@ CanzoneNowPlayingWidget_FILES = $(wildcard *.swift)
 CanzoneNowPlayingWidget_INSTALL_PATH = /Applications/Canzone.app/PlugIns
 CanzoneNowPlayingWidget_FRAMEWORKS = NotificationCenter
 CanzoneNowPlayingWidget_PRIVATE_FRAMEWORKS = MediaPlayerUI
-CanzoneNowPlayingWidget_EXTRA_FRAMEWORKS = Cephei
+CanzoneNowPlayingWidget_EXTRA_FRAMEWORKS = Cephei CydiaSubstrate
 CanzoneNowPlayingWidget_SWIFT_BRIDGING_HEADER = ../global/BridgingHeader.h
 
 include $(THEOS_MAKE_PATH)/appex.mk

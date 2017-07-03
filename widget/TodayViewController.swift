@@ -41,10 +41,10 @@ class TodayViewController: MediaControlsViewController, NCWidgetProviding {
 		// set the content size. if our preferred height is larger than the maximum we’re currently
 		// allowed, then we need to just go with the max. this also makes it use ios’s default compact
 		// height when in compact mode (currently, 95pt)
-		preferredContentSize = CGSize(width: maxSize.width, height: min(maxSize.height, 380))
+		preferredContentSize = CGSize(width: maxSize.width, height: min(maxSize.height, 120))
 
 		// set the expanded mode on the controls
-		setState(controlsState, animated: true)
+		state = controlsState
 	}
 	
 	func widgetPerformUpdate(completionHandler: (@escaping (NCUpdateResult) -> Void)) {
