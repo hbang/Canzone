@@ -3,7 +3,7 @@ export TARGET = iphone:10.1:9.0
 # we’re only supporting arm64. sorry
 export ARCHS = arm64
 
-INSTALL_TARGET_PROCESSES = Preferences CanzoneNowPlayingWidget CanzoneNotificationContent
+INSTALL_TARGET_PROCESSES = Preferences
 
 ifneq ($(RESPRING),0)
 INSTALL_TARGET_PROCESSES += SpringBoard
@@ -29,4 +29,4 @@ after-install::
 ifeq ($(RESPRING),0)
 	#install.exec "uiopen prefs:root=Canzone"
 endif
-	install.exec "killall -KILL CanzoneNotificationContent; killall -KILL CanzoneNotificationContent"
+	install.exec "killall -KILL CanzoneNotificationContent CanzoneNowPlayingWidget; killall -KILL CanzoneNotificationContent"
