@@ -46,6 +46,14 @@
 	<key>HIDE_LOCK_MUSIC_CONTROLS_EXPLANATION</key>
 	<string>Use the now playing notification or widget to control your music.</string>
 
+	<!-- Switch to toggle the playback controls on the banner notification. -->
+	<key>BANNER_CONTROLS</key>
+	<string>Banner Playback Controls</string>
+
+	<!-- Explanation of the banner controls switch. -->
+	<key>BANNER_CONTROLS_EXPLANATION</key>
+	<string>Show basic playback control buttons on the notification banner.</string>
+
 	<!-- Label for TypeStatus Plus button. Do not translate. -->
 	<key>TYPESTATUS_PLUS</key>
 	<string>TypeStatus Plus</string>

@@ -1,6 +1,7 @@
 #import "HBCZNotificationMediaControlsViewController.h"
 #import "HBCZNowPlayingBulletinProvider.h"
 #import "HBCZNowPlayingController.h"
+#import "HBCZPreferences.h"
 #import <MediaPlayerUI/MPUTransportControlsView.h>
 #import <MediaPlayerUI/MPUNowPlayingArtworkView.h>
 #import <UserNotificationsUIKit/NCNotificationViewController.h>
@@ -32,6 +33,10 @@
 - (NCNotificationRequest *)notificationRequestAtIndexPath:(NSIndexPath *)indexPath;
 
 @end
+
+#pragma mark - Variables
+
+HBCZPreferences *preferences;
 
 #pragma mark - Helpers
 
@@ -188,7 +193,7 @@ static BOOL reuseIdentifierHax = NO;
 			self.hb_canzoneControlsViewController = viewController;
 		}
 
-		if (!controlsView) {
+		if (!controlsView && preferences.showBannerControls) {
 			controlsView = viewController.view.transportControls;
 			controlsView.alpha = 0.9f;
 			controlsView.minimumNumberOfTransportButtonsForLayout = 2;
@@ -199,12 +204,12 @@ static BOOL reuseIdentifierHax = NO;
 			self.hb_canzoneControlsView = controlsView;
 		}
 
-		controlsView.hidden = NO;
+		controlsView.hidden = preferences.showBannerControls;
 	}
 
 	%orig;
 
-	if (isCanzoneNotification) {
+	if (isCanzoneNotification && preferences.showBannerControls) {
 		UIView *contentView = [self valueForKey:@"_contentView"];
 
 		// TODO: something not as stupid as this!!!
@@ -222,6 +227,8 @@ static BOOL reuseIdentifierHax = NO;
 
 %ctor {
 	if (IS_IOS_OR_NEWER(iOS_10_0)) {
+		preferences = [HBCZPreferences sharedInstance];
+
 		%init;
 	}
 }

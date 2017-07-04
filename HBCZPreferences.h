@@ -4,7 +4,7 @@
 
 + (instancetype)sharedInstance;
 
-@property (readonly) BOOL nowPlayingKeepBulletins, nowPlayingWakeWhenLocked, hideLockMusicControls;
+@property (readonly) BOOL nowPlayingKeepBulletins, nowPlayingWakeWhenLocked, hideLockMusicControls, showBannerControls;
 
 @property (readonly) BOOL nowPlayingProvider;
 

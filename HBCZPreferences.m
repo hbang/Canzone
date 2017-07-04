@@ -23,6 +23,7 @@
 		[_preferences registerBool:&_nowPlayingKeepBulletins default:NO forKey:@"NowPlayingKeepBulletins"];
 		[_preferences registerBool:&_nowPlayingWakeWhenLocked default:NO forKey:@"NowPlayingWakeWhenLocked"];
 		[_preferences registerBool:&_hideLockMusicControls default:YES forKey:@"HideLockMusicControls"];
+		[_preferences registerBool:&_showBannerControls default:YES forKey:@"BannerControls"];
 
 		[_preferences registerBool:&_nowPlayingProvider default:NO forKey:@"NowPlayingProvider"];
 	}
