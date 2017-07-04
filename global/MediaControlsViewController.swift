@@ -140,7 +140,7 @@ class MediaControlsViewController: UIViewController, MPUNowPlayingDelegate {
 			view.hb_addCompactConstraint("containerView.bottom = self.bottom - margin", metrics: metrics, views: views)
 			
 			containerView.hb_addCompactConstraints([
-				"artworkView.bottom = containerView.bottom - artworkInset"
+				"artworkView.bottom = containerView.bottom - artworkInset",
 				"labelsContainerView.top = containerView.top",
 				"labelsContainerView.bottom = containerView.bottom"
 			], metrics: metrics, views: views)
