@@ -2,7 +2,7 @@ import UIKit
 
 class HaxMediaControlsViewController: MPUControlCenterMediaControlsViewController {
 
-	var controlsHeight: CGFloat = 32
+	let controlsHeight: CGFloat = 32
 
 	func transportControlsView(_ view: UIView, defaultTransportButtonSizeWithProposedSize proposedSize: CGSize) -> CGSize {
 		// force the buttons to be a little smaller. 38 is friggin huge

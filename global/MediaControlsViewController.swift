@@ -10,25 +10,28 @@ class MediaControlsViewController: UIViewController, MPUNowPlayingDelegate {
 
 	// we need to keep strong references to these around, otherwise they’d be released by ARC and we
 	// don’t get to have the goodness they provide
-	var nowPlayingController: MPUNowPlayingController!
-	var controlsViewController: HaxMediaControlsViewController!
+	var nowPlayingController = MPUNowPlayingController()
+	var controlsViewController = HaxMediaControlsViewController()
 
-	var containerView: UIView!
-	var artworkView: MPUNowPlayingArtworkView!
-	var labelsContainerView: UIView!
+	var containerView = UIView()
+	var artworkView = MPUNowPlayingArtworkView()
+	var labelsContainerView = UIView()
 
-	var titleLabel: MPUControlCenterMetadataView!
-	var artistAlbumLabel: MPUControlCenterMetadataView!
-	var transportControls: UIView!
+	var titleLabel = MetadataLabel(frame: .zero)
+	var artistAlbumLabel = MetadataLabel(frame: .zero)
+	
+	var transportControls: UIView {
+		return controlsViewController.view!.transportControls
+	}
 
 	var titleLabelHeightConstraint: NSLayoutConstraint!
 	var artistAlbumLabelHeightConstraint: NSLayoutConstraint!
 
 	var state = InterfaceState.notification {
-		didSet {
-			view.setNeedsLayout()
-		}
+		didSet { updateMetadata() }
 	}
+
+	lazy var mpuiBundle = Bundle(identifier: "com.apple.MediaPlayerUI")!
 
 	// MARK: - Init
 
@@ -48,45 +51,33 @@ class MediaControlsViewController: UIViewController, MPUNowPlayingDelegate {
 	override func loadView() {
 		super.loadView()
 
+		// set up the now playing controller to send us updates
+		nowPlayingController.delegate = self
+
 		let isWidget = state != .notification
 
 		view.autoresizingMask = [ .flexibleWidth ]
 
-		controlsViewController = HaxMediaControlsViewController()
-		let controlsView = controlsViewController.view!
 		
 		// construct the views
-		containerView = UIView()
 		containerView.translatesAutoresizingMaskIntoConstraints = false
 		view.addSubview(containerView)
 
-		artworkView = MPUNowPlayingArtworkView()
 		artworkView.translatesAutoresizingMaskIntoConstraints = false
 		artworkView.activated = true
 		containerView.addSubview(artworkView)
 
-		labelsContainerView = UIView()
 		labelsContainerView.translatesAutoresizingMaskIntoConstraints = false
 		containerView.addSubview(labelsContainerView)
 
-		// also steal the labels
-		titleLabel = controlsView.value(forKey: "_titleLabel") as! MPUControlCenterMetadataView
 		titleLabel.translatesAutoresizingMaskIntoConstraints = false
-		titleLabel.numberOfLines = 1
-		titleLabel.marqueeEnabled = true
-		titleLabel.isUserInteractionEnabled = false
 		labelsContainerView.addSubview(titleLabel)
-		
-		artistAlbumLabel = controlsView.value(forKey: "_artistAlbumConcatenatedLabel") as! MPUControlCenterMetadataView
+
 		artistAlbumLabel.translatesAutoresizingMaskIntoConstraints = false
-		artistAlbumLabel.numberOfLines = 1
-		artistAlbumLabel.marqueeEnabled = true
-		artistAlbumLabel.isUserInteractionEnabled = false
 		labelsContainerView.addSubview(artistAlbumLabel)
 
 		// steal the transport controls from MPUControlCenterMediaControlsViewController, which will
 		// manage them for us
-		transportControls = controlsView.transportControls
 		transportControls.translatesAutoresizingMaskIntoConstraints = false
 		labelsContainerView.addSubview(transportControls)
 
@@ -168,45 +159,78 @@ class MediaControlsViewController: UIViewController, MPUNowPlayingDelegate {
 			titleLabelHeightConstraint,
 			artistAlbumLabelHeightConstraint
 		])
-		
-		// set up the now playing controller to send us updates
-		nowPlayingController = MPUNowPlayingController()
-		nowPlayingController.delegate = self
+	}
+
+	override func viewWillAppear(_ animated: Bool) {
+		super.viewWillAppear(animated)
 		nowPlayingController.startUpdating()
+	}
+
+	override func viewWillDisappear(_ animated: Bool) {
+		super.viewWillDisappear(animated)
+		nowPlayingController.stopUpdating()
 	}
 
 	override func viewWillLayoutSubviews() {
 		let isSmall = state == .widgetCollapsed
 
-		controlsViewController.controlsHeight = isSmall ? 28 : 32
-
 		super.viewWillLayoutSubviews()
 
-		// numberOfLines and marqueeEnabled can be changed behind our backs (i should really just
-		// construct these labels myself... not enough time now) so set them again here
+		// set the right number of lines and marquee state on the labels
 		titleLabel.numberOfLines = isSmall ? 1 : 2
 		artistAlbumLabel.numberOfLines = isSmall ? 1 : 2
 
-		// if titleLabel isn't 1 line, this won't do anything but will still align it with the others
 		titleLabel.marqueeEnabled = isSmall
 		artistAlbumLabel.marqueeEnabled = isSmall
 		
 		artistAlbumLabel.isHidden = false
 
-		let labelExtraMargin: CGFloat = 2
-
 		// the fuck is a greatestFiniteMagnitude? why wasn’t calling it “max”, like, you know, the
 		// maximum number possible for the type, good enough?
 		let size = CGSize(width: labelsContainerView.frame.size.width, height: CGFloat.greatestFiniteMagnitude)
-		titleLabelHeightConstraint.constant = titleLabel.sizeThatFits(size).height + labelExtraMargin
-		artistAlbumLabelHeightConstraint.constant = artistAlbumLabel.sizeThatFits(size).height + labelExtraMargin
+		titleLabelHeightConstraint.constant = titleLabel.sizeThatFits(size).height
+		artistAlbumLabelHeightConstraint.constant = artistAlbumLabel.sizeThatFits(size).height
+	}
+
+	func updateMetadata() {
+		// if the artwork changed, update it
+		if artworkView.artworkImage != nowPlayingController.currentNowPlayingArtwork {
+			artworkView.artworkImage = nowPlayingController.currentNowPlayingArtwork
+		}
+
+		guard let metadata = nowPlayingController.currentNowPlayingMetadata else {
+			return
+		}
+
+		// set the labels to something useful
+		let attributes = [
+			NSFontAttributeName: UIFont.preferredFont(forTextStyle: .body),
+			NSForegroundColorAttributeName: UIColor.black
+		]
+
+		titleLabel.attributedText = NSAttributedString(string: metadata.title ?? "", attributes: attributes)
+
+		var subtitleText = ""
+
+		if metadata.album != nil && metadata.artist != nil {
+			// construct a subtitle based on the format string MPUI uses
+			subtitleText = String(format: NSLocalizedString("ARTIST_ALBUM_CONCATENATED_FORMAT", tableName: "MediaPlayerUI", bundle: mpuiBundle, comment: ""), metadata.album!, metadata.artist)
+		} else if metadata.album != nil {
+			subtitleText = metadata.album!
+		} else if metadata.artist != nil {
+			subtitleText = metadata.artist!
+		}
+
+		artistAlbumLabel.attributedText = NSAttributedString(string: subtitleText, attributes: attributes)
+
+		// the layout needs updating now
+		view.setNeedsLayout()
 	}
 
 	// MARK: - Now playing
 
 	func nowPlayingController(_ nowPlayingController: MPUNowPlayingController!, nowPlayingInfoDidChange info: [AnyHashable: Any]!) {
-		artworkView.artworkImage = nowPlayingController.currentNowPlayingArtwork
-		view.setNeedsLayout()
+		updateMetadata()
 	}
 
 	func nowPlayingController(_ nowPlayingController: MPUNowPlayingController!, playbackStateDidChange state: Bool) {
