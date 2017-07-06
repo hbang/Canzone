@@ -58,13 +58,13 @@ class MediaControlsViewController: UIViewController, MPUNowPlayingDelegate {
 
 		view.autoresizingMask = [ .flexibleWidth ]
 
-		
 		// construct the views
 		containerView.translatesAutoresizingMaskIntoConstraints = false
 		view.addSubview(containerView)
 
 		artworkView.translatesAutoresizingMaskIntoConstraints = false
 		artworkView.activated = true
+		artworkView.addTarget(self, action: #selector(self.artworkTapped), for: .touchUpInside)
 		containerView.addSubview(artworkView)
 
 		labelsContainerView.translatesAutoresizingMaskIntoConstraints = false
@@ -202,6 +202,10 @@ class MediaControlsViewController: UIViewController, MPUNowPlayingDelegate {
 			return
 		}
 
+		// for some reason, this starts off being nil and calling it causes it to be populated, which
+		// we'll need to open the app if the artwork view is tapped
+		_ = nowPlayingController.nowPlayingAppDisplayID
+
 		// set the labels to something useful
 		let attributes = [
 			NSFontAttributeName: UIFont.preferredFont(forTextStyle: .body),
@@ -235,6 +239,18 @@ class MediaControlsViewController: UIViewController, MPUNowPlayingDelegate {
 
 	func nowPlayingController(_ nowPlayingController: MPUNowPlayingController!, playbackStateDidChange state: Bool) {
 		artworkView.setActivated(state, animated: true)
+	}
+
+	// MARK: - Callbacks
+
+	func artworkTapped() {
+		guard let bundleID = nowPlayingController.nowPlayingAppDisplayID else {
+			// nothing playing, probably. nothing to do here
+			return
+		}
+
+		// launch the app, hopefully
+		LSApplicationWorkspace.default().openApplication(withBundleID: bundleID)
 	}
 	
 }
