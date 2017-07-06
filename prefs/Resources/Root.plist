@@ -13,32 +13,6 @@
 		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
-			<key>id</key>
-			<string>TypeStatusPlusGroup</string>
-			<key>label</key>
-			<string>TYPESTATUS_PLUS</string>
-			<key>footerText</key>
-			<string>TYPESTATUS_PLUS_PROVIDER_EXPLANATION</string>
-		</dict>
-		<dict>
-			<key>cell</key>
-			<string>PSSwitchCell</string>
-			<key>default</key>
-			<true/>
-			<key>defaults</key>
-			<string>ws.hbang.canzone</string>
-			<key>id</key>
-			<string>TypeStatusPlus</string>
-			<key>key</key>
-			<string>NowPlayingProvider</string>
-			<key>label</key>
-			<string>TYPESTATUS_PLUS_PROVIDER</string>
-			<key>PostNotification</key>
-			<string>ws.hbang.canzone/ReloadPrefs</string>
-		</dict>
-		<dict>
-			<key>cell</key>
-			<string>PSGroupCell</string>
 			<key>label</key>
 			<string>PREVIEW</string>
 		</dict>
@@ -52,17 +26,9 @@
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>id</key>
-			<string>TypeStatusPlusNotificationsGroup</string>
-			<key>label</key>
-			<string>NOTIFICATIONS</string>
-			<key>footerText</key>
-			<string>NOW_PLAYING_BULLETINS_EXPLANATION</string>
-		</dict>
-		<dict>
-			<key>cell</key>
-			<string>PSGroupCell</string>
-			<key>id</key>
 			<string>NotificationsGroup</string>
+			<key>label</key>
+			<string>NOW_PLAYING_BULLETINS</string>
 			<key>footerText</key>
 			<string>NOW_PLAYING_BULLETINS_EXPLANATION</string>
 		</dict>
@@ -70,7 +36,7 @@
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>footerText</key>
-			<string>KEEP_ALL_NOTIFICATIONS_EXPLANATION</string>
+			<string>WAKE_WHEN_LOCKED_EXPLANATION</string>
 		</dict>
 		<dict>
 			<key>cell</key>
@@ -88,9 +54,31 @@
 		</dict>
 		<dict>
 			<key>cell</key>
-			<string>PSGroupCell</string>
-			<key>footerText</key>
-			<string>WAKE_WHEN_LOCKED_EXPLANATION</string>
+			<string>PSSwitchCell</string>
+			<key>default</key>
+			<true/>
+			<key>defaults</key>
+			<string>ws.hbang.canzone</string>
+			<key>key</key>
+			<string>BannerControls</string>
+			<key>label</key>
+			<string>BANNER_CONTROLS</string>
+			<key>PostNotification</key>
+			<string>ws.hbang.canzone/ReloadPrefs</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>default</key>
+			<true/>
+			<key>defaults</key>
+			<string>ws.hbang.canzone</string>
+			<key>key</key>
+			<string>HideLockMusicControls</string>
+			<key>label</key>
+			<string>HIDE_LOCK_MUSIC_CONTROLS</string>
+			<key>PostNotification</key>
+			<string>ws.hbang.canzone/ReloadPrefs</string>
 		</dict>
 		<dict>
 			<key>cell</key>
@@ -109,72 +97,18 @@
 		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
-			<key>footerText</key>
-			<string>HIDE_LOCK_MUSIC_CONTROLS_EXPLANATION</string>
-		</dict>
-		<dict>
-			<key>cell</key>
-			<string>PSSwitchCell</string>
-			<key>default</key>
-			<true/>
-			<key>defaults</key>
-			<string>ws.hbang.canzone</string>
-			<key>key</key>
-			<string>HideLockMusicControls</string>
-			<key>label</key>
-			<string>HIDE_LOCK_MUSIC_CONTROLS</string>
-			<key>PostNotification</key>
-			<string>ws.hbang.canzone/ReloadPrefs</string>
-		</dict>
-		<dict>
-			<key>cell</key>
-			<string>PSGroupCell</string>
-			<key>footerText</key>
-			<string>BANNER_CONTROLS_EXPLANATION</string>
-		</dict>
-		<dict>
-			<key>cell</key>
-			<string>PSSwitchCell</string>
-			<key>default</key>
-			<true/>
-			<key>defaults</key>
-			<string>ws.hbang.canzone</string>
-			<key>key</key>
-			<string>BannerControls</string>
-			<key>label</key>
-			<string>BANNER_CONTROLS</string>
-			<key>PostNotification</key>
-			<string>ws.hbang.canzone/ReloadPrefs</string>
-		</dict>
-		<dict>
-			<key>cell</key>
-			<string>PSGroupCell</string>
-			<key>id</key>
-			<string>TypeStatusPlusNotInstalledGroup</string>
-		</dict>
-		<dict>
-			<key>big</key>
-			<true/>
-			<key>cellClass</key>
-			<string>HBLinkTableCell</string>
-			<key>height</key>
-			<integer>64</integer>
-			<key>icon</key>
-			<string>typestatusplus.png</string>
-			<key>id</key>
-			<string>TypeStatusPlusNotInstalled</string>
-			<key>label</key>
-			<string>TYPESTATUS_PLUS</string>
-			<key>subtitle</key>
-			<string>TYPESTATUS_PLUS_SUBTITLE</string>
-			<key>url</key>
-			<string>https://typestatus.com/plus/</string>
-		</dict>
-		<dict>
-			<key>cell</key>
-			<string>PSGroupCell</string>
 			<key>id</key>
 			<string>AboutGroup</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSLinkCell</string>
+			<key>detail</key>
+			<string>HBCZSuggestedTweaksListController</string>
+			<key>isController</key>
+			<true/>
+			<key>label</key>
+			<string>SUGGESTED_TWEAKS</string>
 		</dict>
 		<dict>
 			<key>cell</key>

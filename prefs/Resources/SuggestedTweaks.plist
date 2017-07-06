@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>items</key>
+	<array>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>footerText</key>
+			<string>INTRODUCTION</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+		</dict>
+		<dict>
+			<key>big</key>
+			<true/>
+			<key>cellClass</key>
+			<string>HBLinkTableCell</string>
+			<key>height</key>
+			<integer>64</integer>
+			<key>icon</key>
+			<string>typestatusplus.png</string>
+			<key>isCommercial</key>
+			<true/>
+			<key>label</key>
+			<string>TypeStatus Plus</string>
+			<key>subtitle</key>
+			<string>TYPESTATUS_PLUS_SUBTITLE</string>
+			<key>url</key>
+			<string>https://typestatus.com/plus/</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSLinkCell</string>
+			<key>cellClass</key>
+			<string>HBPackageTableCell</string>
+			<key>label</key>
+			<string>Don’t Stop The Party!</string>
+			<key>packageIdentifier</key>
+			<string>com.golddavid.dontstoptheparty</string>
+			<key>subtitle</key>
+			<string>Music during resprings</string>
+			<key>isCommercial</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSLinkCell</string>
+			<key>cellClass</key>
+			<string>HBPackageTableCell</string>
+			<key>label</key>
+			<string>MusicMark</string>
+			<key>packageIdentifier</key>
+			<string>com.tonykraft.musicmark</string>
+			<key>subtitle</key>
+			<string>Allows Music app to remember your song’s position</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSLinkCell</string>
+			<key>cellClass</key>
+			<string>HBPackageTableCell</string>
+			<key>label</key>
+			<string>QuickShuffleRepeat</string>
+			<key>packageIdentifier</key>
+			<string>com.cpdigitaldarkroom.qsr</string>
+			<key>packageRepository</key>
+			<string>https://beta.cpdigitaldarkroom.com/</string>
+			<key>subtitle</key>
+			<string>Add Shuffle/Repeat to Control Center</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSLinkCell</string>
+			<key>cellClass</key>
+			<string>HBPackageTableCell</string>
+			<key>label</key>
+			<string>TimeMover</string>
+			<key>packageIdentifier</key>
+			<string>com.neinzedd9.timemover</string>
+			<key>subtitle</key>
+			<string>Move, resize &amp; rotate your lock screen clock!</string>
+			<key>isCommercial</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSLinkCell</string>
+			<key>cellClass</key>
+			<string>HBPackageTableCell</string>
+			<key>label</key>
+			<string>Ventana</string>
+			<key>packageIdentifier</key>
+			<string>org.coolstar.ventana</string>
+			<key>subtitle</key>
+			<string>Modern lock screen inspired by Windows 10</string>
+			<key>isCommercial</key>
+			<true/>
+		</dict>
+	</array>
+	<key>title</key>
+	<string>SUGGESTED_TWEAKS</string>
+</dict>
+</plist>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Title for the page. -->
+	<key>SUGGESTED_TWEAKS</key>
+	<string>Suggested Tweaks</string>
+
+	<!-- Message displayed at the top explaining the list. -->
+	<key>INTRODUCTION</key>
+	<string>Canzone goes great with these related tweaks, which are officially tested to ensure they work with Canzone.</string>
+
+	<!-- Label for TypeStatus Plus button. Do not translate. -->
+	<key>TYPESTATUS_PLUS</key>
+	<string>TypeStatus Plus</string>
+
+	<!-- Explanation displayed when TypeStatus Plus isn’t installed. -->
+	<key>TYPESTATUS_PLUS_SUBTITLE</key>
+	<string>Get subtle now playing notifications in your status bar, and more, with TypeStatus Plus.</string>
+</dict>
+</plist>
