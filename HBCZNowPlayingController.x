@@ -45,6 +45,7 @@
 		// listen for the now playing change notification
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_mediaInfoDidChange:) name:(__bridge NSString *)kMRMediaRemoteNowPlayingInfoDidChangeNotification object:nil];
 
+		// grab the fallback placeholder artwork image
 		NSBundle *mpuiBundle = [NSBundle bundleWithIdentifier:@"com.apple.MediaPlayerUI"];
 		UIImage *placeholderImage = [UIImage imageNamed:@"placeholder-artwork" inBundle:mpuiBundle];
 		_placeholderArtData = UIImagePNGRepresentation(placeholderImage);
@@ -89,43 +90,11 @@
 				// store the identifier
 				_lastSongIdentifier = identifier;
 
-				// get the frontmost app
-				SBApplication *frontmostApp = ((SpringBoard *)[UIApplication sharedApplication])._accessibilityFrontMostApplication;
-
-				// if the now playing provider is enabled, and typestatus plus is present
-				if (_preferences.nowPlayingProvider && %c(HBTSPlusProviderController)) {
-					// as long as this isn’t coming from the frontmost app
-					if (![frontmostApp.bundleIdentifier isEqualToString:nowPlayingApp.bundleIdentifier]) {
-						// post it as a provider notification
-						[self _postProviderNotificationForApp:nowPlayingApp title:title artist:artist];
-					}
-				} else {
-					// else, post a bulletin
-					[_bulletinProvider postBulletinForApp:nowPlayingApp title:title artist:artist album:album art:art];
-				}
+				// post the bulletin
+				[_bulletinProvider postBulletinForApp:nowPlayingApp title:title artist:artist album:album art:art];
 			}
 		});
 	});
-}
-
-#pragma mark - TypeStatus Provider
-
-- (void)_postProviderNotificationForApp:(SBApplication *)app title:(NSString *)title artist:(NSString *)artist {
-	// if typestatus plus provider api isn’t available, don’t do anything
-	if (!%c(HBTSPlusProviderController)) {
-		return;
-	}
-
-	// construct a notification
-	HBTSNotification *notification = [[%c(HBTSNotification) alloc] init];
-	notification.content = artist ? [NSString stringWithFormat:@"%@ – %@", title, artist] : title;
-	notification.boldRange = NSMakeRange(0, title.length);
-	notification.statusBarIconName = @"TypeStatusPlusMusic";
-	notification.sourceBundleID = app.bundleIdentifier;
-
-	// grab our provider and show it
-	HBTSPlusProvider *provider = [[%c(HBTSPlusProviderController) sharedInstance] providerWithAppIdentifier:kHBCZAppIdentifier];
-	[provider showNotification:notification];
 }
 
 @end
