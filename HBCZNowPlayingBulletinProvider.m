@@ -168,7 +168,7 @@ static NSString *const kHBCZNowPlayingCategoryIdentifier = @"CanzoneNowPlayingCa
 	}
 
 	// determine the size to use
-	CGSize size = [constraints sizeFromAspectRatio:1];
+	CGSize size = [constraints sizeFromAspectRatio:_currentArt.size.width / _currentArt.size.height];
 
 	// render at the new size
 	UIGraphicsBeginImageContextWithOptions(size, NO, 0);
