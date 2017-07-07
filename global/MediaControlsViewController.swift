@@ -137,7 +137,8 @@ class MediaControlsViewController: UIViewController, MPUNowPlayingDelegate {
 			], metrics: metrics, views: views)
 		}
 
-		containerView.hb_addConstraints(withVisualFormat: "H:|-artworkInset-[artworkView\(isWidget ? "(==widgetArtworkSize)" : "")]-innerMargin-[labelsContainerView]|", options: NSLayoutFormatOptions(), metrics: metrics, views: views)
+		containerView.hb_addConstraints(withVisualFormat: "H:|-artworkInset-[artworkView\(isWidget ? "(widgetArtworkSize)" : "")]-innerMargin-[labelsContainerView]|", options: NSLayoutFormatOptions(), metrics: metrics, views: views)
+		labelsContainerView.hb_addConstraints(withVisualFormat: "V:|[titleLabel][artistAlbumLabel][spacerView][transportControls(controlsHeight)]|", options: NSLayoutFormatOptions(), metrics: metrics, views: views)
 
 		// is there not a better, concise way to do this??
 		labelsContainerView.hb_addCompactConstraints([
@@ -148,8 +149,6 @@ class MediaControlsViewController: UIViewController, MPUNowPlayingDelegate {
 			"transportControls.width = controlsWidth",
 			"transportControls.centerX = labelsContainerView.centerX"
 		], metrics: metrics, views: views)
-
-		labelsContainerView.hb_addConstraints(withVisualFormat: "V:|[titleLabel][artistAlbumLabel][spacerView][transportControls(controlsHeight)]|", options: NSLayoutFormatOptions(), metrics: metrics, views: views)
 
 		// manually make some constraints for the label heights
 		titleLabelHeightConstraint = NSLayoutConstraint(item: titleLabel, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 0)
@@ -182,8 +181,6 @@ class MediaControlsViewController: UIViewController, MPUNowPlayingDelegate {
 
 		titleLabel.marqueeEnabled = isSmall
 		artistAlbumLabel.marqueeEnabled = isSmall
-		
-		artistAlbumLabel.isHidden = false
 
 		// the fuck is a greatestFiniteMagnitude? why wasn’t calling it “max”, like, you know, the
 		// maximum number possible for the type, good enough?
@@ -193,9 +190,12 @@ class MediaControlsViewController: UIViewController, MPUNowPlayingDelegate {
 	}
 
 	func updateMetadata() {
+		// get the artwork, falling back on MPUI's placeholder image (usually when we're not playing)
+		let artworkImage = nowPlayingController.currentNowPlayingArtwork ?? UIImage(named: "placeholder-artwork", in: mpuiBundle)
+
 		// if the artwork changed, update it
-		if artworkView.artworkImage != nowPlayingController.currentNowPlayingArtwork {
-			artworkView.artworkImage = nowPlayingController.currentNowPlayingArtwork
+		if artworkView.artworkImage != artworkImage {
+			artworkView.artworkImage = artworkImage
 		}
 
 		guard let metadata = nowPlayingController.currentNowPlayingMetadata else {
@@ -229,6 +229,10 @@ class MediaControlsViewController: UIViewController, MPUNowPlayingDelegate {
 
 		// the layout needs updating now
 		view.setNeedsLayout()
+
+		if let app = LSApplicationProxy(forIdentifier: nowPlayingController.nowPlayingAppDisplayID) {
+			title = app.localizedName
+		}
 	}
 
 	// MARK: - Now playing

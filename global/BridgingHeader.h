@@ -9,4 +9,5 @@
 #import <MediaPlayerUI/MPUTransportControlsView.h>
 #import <MediaRemote/MediaRemote.h>
 #import <MobileCoreServices/LSApplicationWorkspace.h>
-#import <UIKit/UIColor+Private.h>
+#import <MobileCoreServices/LSApplicationProxy.h>
+#import <UIKit/UIImage+Private.h>

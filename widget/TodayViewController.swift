@@ -39,7 +39,8 @@ class TodayViewController: MediaControlsViewController, NCWidgetProviding {
 
 		let metrics: [String: NSNumber] = [
 			"margin": 6,
-			"timeInset": 6,
+			"timeTop": 16,
+			"timeInset": 3,
 			"timeHeight": 28
 		]
 
@@ -59,7 +60,7 @@ class TodayViewController: MediaControlsViewController, NCWidgetProviding {
 		], metrics: metrics, views: views)
 
 		extrasView.hb_addConstraints(withVisualFormat: "H:|-timeInset-[timeView]-timeInset-|", options: NSLayoutFormatOptions(), metrics: metrics, views: views)
-		extrasView.hb_addConstraints(withVisualFormat: "V:|[timeView(timeHeight)]|", options: NSLayoutFormatOptions(), metrics: metrics, views: views)
+		extrasView.hb_addConstraints(withVisualFormat: "V:|-timeTop-[timeView(timeHeight)]|", options: NSLayoutFormatOptions(), metrics: metrics, views: views)
 
 		containerView.hb_addConstraints(withVisualFormat: "V:|[labelsContainerView]-margin-[extrasView]|", options: NSLayoutFormatOptions(), metrics: metrics, views: views)
 
@@ -77,7 +78,7 @@ class TodayViewController: MediaControlsViewController, NCWidgetProviding {
 	override func viewWillLayoutSubviews() {
 		super.viewWillLayoutSubviews()
 
-		let isSmall = self.state == .widgetCollapsed
+		let isSmall = state == .widgetCollapsed
 		
 		extrasView.alpha = isSmall ? 0 : 1
 
