@@ -74,8 +74,6 @@ static NSString *const kHBCZNowPlayingCategoryIdentifier = @"CanzoneNowPlayingCa
 
 		// construct our default subtype parameters
 		BBSectionSubtypeParameters *subtypeParameters = identity.sectionParameters.defaultSubtypeParameters;
-		//subtypeParameters.secondaryContentRemoteServiceBundleIdentifier = @"ws.hbang.canzone.app.notificationcontent";
-		//subtypeParameters.secondaryContentRemoteViewControllerClassName = @"NotificationViewController";
 		subtypeParameters.allowsAddingToLockScreenWhenUnlocked = YES;
 		subtypeParameters.allowsAutomaticRemovalFromLockScreen = NO;
 
@@ -135,20 +133,6 @@ static NSString *const kHBCZNowPlayingCategoryIdentifier = @"CanzoneNowPlayingCa
 		// set a callback to open the app
 		bulletin.defaultAction = [BBAction actionWithLaunchBundleID:app.bundleIdentifier callblock:nil];
 	}
-
-	// on apple watch, launch NanoNowPlaying
-	// TODO: this doesn’t work :( maybe we’ll have to go back to the phone, then have the phone tell
-	// the watch to open the app
-	/*
-	BBAction *watchAction = [BBAction actionWithAppearance:[BBAppearance appearanceWithTitle:@"Open"]];
-	watchAction.identifier = @"open-on-watch";
-	watchAction.callblock = ^{ HBLogWarn(@"watch out bitchezz"); };
-	
-	// set all our supplementary actions
-	bulletin.supplementaryActionsByLayout = @{
-		@1: @[ watchAction ]
-	};
-	*/
 
 	// get a UIImage of the art and hold onto it
 	_currentArt = [[UIImage alloc] initWithData:art];
