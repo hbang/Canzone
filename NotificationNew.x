@@ -1,10 +1,10 @@
+#import "HBCZNotificationListCell.h"
 #import "HBCZNotificationWidgetViewController.h"
 #import "HBCZNowPlayingBulletinProvider.h"
 #import "HBCZNowPlayingController.h"
 #import "HBCZPreferences.h"
-#import <MediaPlayerUI/MPUTransportControlsView.h>
-#import <MediaPlayerUI/MPUNowPlayingArtworkView.h>
 #import <UserNotificationsUIKit/NCNotificationViewController.h>
+#import <UserNotificationsUIKit/NCShortLookView.h>
 #import <UIKit/UIView+Private.h>
 #import <version.h>
 
@@ -31,6 +31,10 @@
 @interface NCNotificationListViewController : UICollectionViewController
 
 - (NCNotificationRequest *)notificationRequestAtIndexPath:(NSIndexPath *)indexPath;
+
+@end
+
+@interface NCNotificationPriorityListViewController : NCNotificationListViewController
 
 @end
 
@@ -79,13 +83,13 @@ static NSString *const kHBCZNowPlayingCellIdentifier = @"CanzoneNowPlayingCellId
 
 static BOOL reuseIdentifierHax = NO;
 
-%hook NCNotificationListViewController
+%hook NCNotificationPriorityListViewController
 
 - (void)viewDidLoad {
 	%orig;
 
 	// register our custom reuse identifier
-	[self.collectionView registerClass:%c(NCNotificationListCell) forCellWithReuseIdentifier:kHBCZNowPlayingCellIdentifier];
+	[self.collectionView registerClass:%c(HBCZNotificationListCell) forCellWithReuseIdentifier:kHBCZNowPlayingCellIdentifier];
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -114,19 +118,21 @@ static BOOL reuseIdentifierHax = NO;
 
 @interface NCNotificationContentView ()
 
+- (NCNotificationRequest *)_hb_canzoneNotificationRequest;
 - (BOOL)_hb_isCanzoneNotification;
 - (BOOL)_hb_isCanzoneLockNotification;
 
+- (UIViewController *)_hb_canzoneWidgetViewController;
+
 @property (nonatomic, retain) NSString *hb_canzoneSongIdentifier;
-@property (nonatomic, retain) HBCZNotificationWidgetViewController *hb_canzoneWidgetViewController;
-@property (nonatomic, retain) MPUTransportControlsView *hb_canzoneControlsView;
+@property (nonatomic, retain) UIView *_hb_widgetView;
 
 @end
 
 %hook NCNotificationContentView
 
 %property (nonatomic, retain) NSString *hb_canzoneSongIdentifier;
-%property (nonatomic, retain) HBCZNotificationWidgetViewController *hb_canzoneWidgetViewController;
+%property (nonatomic, retain) UIView *_hb_widgetView;
 
 - (instancetype)initWithStyle:(NSInteger)style {
 	self = %orig;
@@ -138,15 +144,14 @@ static BOOL reuseIdentifierHax = NO;
 	return self;
 }
 
-%new - (BOOL)_hb_isCanzoneNotification {
+%new - (NCNotificationRequest *)_hb_canzoneNotificationRequest {
 	NCNotificationViewController *viewController = (NCNotificationViewController *)self._viewControllerForAncestor;
+	return viewController && [viewController isKindOfClass:%c(NCNotificationViewController)] ? viewController.notificationRequest : nil;
+}
 
-	if ([viewController isKindOfClass:%c(NCNotificationViewController)]) {
-		NCNotificationRequest *request = viewController.notificationRequest;
-		return request && request.hb_isCanzoneNotification;
-	} else {
-		return NO;
-	}
+%new - (BOOL)_hb_isCanzoneNotification {
+	NCNotificationRequest *request = self._hb_canzoneNotificationRequest;
+	return request && request.hb_isCanzoneNotification;
 }
 
 %new - (BOOL)_hb_isCanzoneLockNotification {
@@ -154,17 +159,15 @@ static BOOL reuseIdentifierHax = NO;
 		return NO;
 	}
 
-	UIViewController *viewController = self._viewControllerForAncestor;
+	// ugh. such a hack. sorry
+	UIView *cell = self;
 
-	// walk up the view controller hierarchy until we hit either SBDashBoardViewController, or nil.
-	// we don't specifically use SBDashBoardMainPageViewController because metrolockscreen replaces
-	// it, or something
 	do {
-		viewController = viewController.parentViewController;
-	} while (viewController && ![viewController isKindOfClass:%c(SBDashBoardViewController)]);
+		cell = cell.superview;
+	} while (cell != nil && ![cell isKindOfClass:%c(NCNotificationListCell)]);
 
-	// if we got a non-nil view controller, we know we're on the lock screen
-	return viewController != nil;
+	// kinda voids the point of this lol, but it'll do for now
+	return !cell || cell.class == %c(HBCZNotificationListCell);
 }
 
 %new - (void)_hb_canzoneThumbnailChanged:(NSNotification *)notification {
@@ -199,32 +202,36 @@ static BOOL reuseIdentifierHax = NO;
 	return newFrame;
 }
 
-- (void)layoutSubviews {
-	BOOL isCanzoneNotification = self._hb_isCanzoneNotification;
+- (CGSize)sizeThatFits:(CGSize)size {
+	CGSize newSize = %orig;
 
-	if (isCanzoneNotification) {
-		UIView *contentView = [self valueForKey:@"_contentView"];
-		HBCZNotificationWidgetViewController *viewController = self.hb_canzoneWidgetViewController;
-
-		if (preferences.showBannerControls && self._hb_isCanzoneLockNotification) {
-			if (!viewController) {
-				UIViewController *parentViewController = self._viewControllerForAncestor;
-
-				viewController = [[%c(HBCZNotificationWidgetViewController) alloc] init];
-				[viewController willMoveToParentViewController:parentViewController];
-				viewController.view.frame = self.bounds;
-				viewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-				[self addSubview:viewController.view];
-
-				self.hb_canzoneWidgetViewController = viewController;
-			}
-		}
-
-		viewController.view.hidden = !preferences.showBannerControls;
-		contentView.hidden = !viewController.view.hidden;
+	// if we've got the widget, force the right size
+	NSLog(@"[[CZ]] has widget? %@",self._hb_widgetView);
+	if (self._hb_widgetView || (self._hb_isCanzoneLockNotification && preferences.showBannerControls)) {
+		newSize.height = 95;
 	}
 
-	%orig;
+	return newSize;
+}
+
+%new - (UIView *)hb_widgetView {
+	return self._hb_widgetView;
+}
+
+%new - (void)hb_setWidgetView:(UIView *)view {
+	if (view) {
+		[self addSubview:view];
+		self._hb_widgetView = view;
+	} else {
+		[self._hb_widgetView removeFromSuperview];
+		self._hb_widgetView = nil;
+	}
+
+	// hide the content view if we have the widget
+	UIView *contentView = [self valueForKey:@"_contentView"];
+	contentView.hidden = view != nil;
+
+	[self setNeedsLayout];
 }
 
 %end
