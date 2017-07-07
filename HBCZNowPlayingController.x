@@ -45,7 +45,7 @@
 		// listen for the now playing change notification
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_mediaInfoDidChange:) name:(__bridge NSString *)kMRMediaRemoteNowPlayingInfoDidChangeNotification object:nil];
 
-		NSBundle *mpuiBundle = [NSBundle bundleWithPath:@"/System/Library/PrivateFrameworks/MediaPlayerUI.framework"];
+		NSBundle *mpuiBundle = [NSBundle bundleWithIdentifier:@"com.apple.MediaPlayerUI"];
 		UIImage *placeholderImage = [UIImage imageNamed:@"placeholder-artwork" inBundle:mpuiBundle];
 		_placeholderArtData = UIImagePNGRepresentation(placeholderImage);
 	}

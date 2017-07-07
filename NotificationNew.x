@@ -1,4 +1,4 @@
-#import "HBCZNotificationMediaControlsViewController.h"
+#import "HBCZNotificationWidgetViewController.h"
 #import "HBCZNowPlayingBulletinProvider.h"
 #import "HBCZNowPlayingController.h"
 #import "HBCZPreferences.h"
@@ -115,9 +115,10 @@ static BOOL reuseIdentifierHax = NO;
 @interface NCNotificationContentView ()
 
 - (BOOL)_hb_isCanzoneNotification;
+- (BOOL)_hb_isCanzoneLockNotification;
 
 @property (nonatomic, retain) NSString *hb_canzoneSongIdentifier;
-@property (nonatomic, retain) HBCZNotificationMediaControlsViewController *hb_canzoneControlsViewController;
+@property (nonatomic, retain) HBCZNotificationWidgetViewController *hb_canzoneWidgetViewController;
 @property (nonatomic, retain) MPUTransportControlsView *hb_canzoneControlsView;
 
 @end
@@ -125,8 +126,7 @@ static BOOL reuseIdentifierHax = NO;
 %hook NCNotificationContentView
 
 %property (nonatomic, retain) NSString *hb_canzoneSongIdentifier;
-%property (nonatomic, retain) HBCZNotificationMediaControlsViewController *hb_canzoneControlsViewController;
-%property (nonatomic, retain) MPUTransportControlsView *hb_canzoneControlsView;
+%property (nonatomic, retain) HBCZNotificationWidgetViewController *hb_canzoneWidgetViewController;
 
 - (instancetype)initWithStyle:(NSInteger)style {
 	self = %orig;
@@ -149,8 +149,26 @@ static BOOL reuseIdentifierHax = NO;
 	}
 }
 
+%new - (BOOL)_hb_isCanzoneLockNotification {
+	if (!self._hb_isCanzoneNotification) {
+		return NO;
+	}
+
+	UIViewController *viewController = self._viewControllerForAncestor;
+
+	// walk up the view controller hierarchy until we hit either SBDashBoardViewController, or nil.
+	// we don't specifically use SBDashBoardMainPageViewController because metrolockscreen replaces
+	// it, or something
+	do {
+		viewController = viewController.parentViewController;
+	} while (viewController && ![viewController isKindOfClass:%c(SBDashBoardViewController)]);
+
+	// if we got a non-nil view controller, we know we're on the lock screen
+	return viewController != nil;
+}
+
 %new - (void)_hb_canzoneThumbnailChanged:(NSNotification *)notification {
-	if (self._hb_isCanzoneNotification) {
+	if (self._hb_isCanzoneNotification && !preferences.showBannerControls) {
 		NSString *identifier = self.hb_canzoneSongIdentifier;
 
 		if (!identifier) {
@@ -185,40 +203,28 @@ static BOOL reuseIdentifierHax = NO;
 	BOOL isCanzoneNotification = self._hb_isCanzoneNotification;
 
 	if (isCanzoneNotification) {
-		HBCZNotificationMediaControlsViewController *viewController = self.hb_canzoneControlsViewController;
-		MPUTransportControlsView *controlsView = self.hb_canzoneControlsView;
+		UIView *contentView = [self valueForKey:@"_contentView"];
+		HBCZNotificationWidgetViewController *viewController = self.hb_canzoneWidgetViewController;
 
-		if (!viewController) {
-			viewController = [[%c(HBCZNotificationMediaControlsViewController) alloc] init];
-			self.hb_canzoneControlsViewController = viewController;
+		if (preferences.showBannerControls && self._hb_isCanzoneLockNotification) {
+			if (!viewController) {
+				UIViewController *parentViewController = self._viewControllerForAncestor;
+
+				viewController = [[%c(HBCZNotificationWidgetViewController) alloc] init];
+				[viewController willMoveToParentViewController:parentViewController];
+				viewController.view.frame = self.bounds;
+				viewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+				[self addSubview:viewController.view];
+
+				self.hb_canzoneWidgetViewController = viewController;
+			}
 		}
 
-		if (!controlsView && preferences.showBannerControls) {
-			controlsView = viewController.view.transportControls;
-			controlsView.alpha = 0.9f;
-			controlsView.minimumNumberOfTransportButtonsForLayout = 2;
-			controlsView.frame = CGRectMake(self.frame.size.width - 100.f - 15.f, 0, 100.f, self.frame.size.height);
-			controlsView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleLeftMargin;
-			[self addSubview:controlsView];
-			
-			self.hb_canzoneControlsView = controlsView;
-		}
-
-		controlsView.hidden = preferences.showBannerControls;
+		viewController.view.hidden = !preferences.showBannerControls;
+		contentView.hidden = !viewController.view.hidden;
 	}
 
 	%orig;
-
-	if (isCanzoneNotification && preferences.showBannerControls) {
-		UIView *contentView = [self valueForKey:@"_contentView"];
-
-		// TODO: something not as stupid as this!!!
-		contentView.clipsToBounds = YES;
-
-		CGRect contentFrame = contentView.frame;
-		contentFrame.size.width -= 115.f;
-		contentView.frame = contentFrame;
-	}
 }
 
 %end
